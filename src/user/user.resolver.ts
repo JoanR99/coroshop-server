@@ -1,0 +1,230 @@
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
+
+import { AuthGuard } from 'src/auth.guard';
+import { AdminGuard } from 'src/admin.guard';
+import { UserId, Res } from 'src/context.decorators';
+import { MutationBasicResponse, GetItemsInput } from 'src/shared/shared.types';
+import { User } from './user.model';
+import {
+  AddUserInput,
+  UpdateUserInput,
+  UpdateUserProfileInput,
+  LoginInput,
+  LoginResponse,
+  GetUsersResponse,
+  UserResponse,
+} from './user.types';
+import { Response } from 'express';
+
+@Resolver()
+export class UserResolver {
+  constructor(private userService: UserService) {}
+
+  @Query(() => GetUsersResponse)
+  @UseGuards(AuthGuard, AdminGuard)
+  async getUsers(
+    @Args('getUsersInput') { pageNumber, pageSize, keyword }: GetItemsInput,
+  ): Promise<GetUsersResponse> {
+    const page = pageNumber || 1;
+    const keywordRegex = keyword
+      ? {
+          name: {
+            $regex: keyword,
+            $options: 'i',
+          },
+        }
+      : {};
+
+    const count = await this.userService.count(keywordRegex);
+
+    const users = await this.userService
+      .findAll(keywordRegex)
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    const pages = Math.ceil(count / pageSize);
+
+    return {
+      users,
+      page,
+      pages,
+    };
+  }
+
+  @Query(() => User)
+  @UseGuards(AuthGuard)
+  async getUserProfile(@UserId() userId: string): Promise<UserResponse> {
+    const user = await this.userService.findById(userId).select('-password');
+
+    if (!user) throw new Error('User not found');
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
+  }
+
+  @Query(() => User)
+  @UseGuards(AuthGuard, AdminGuard)
+  async getUser(@Args('userId') userId: string): Promise<UserResponse> {
+    const user = await this.userService.findById(userId).select('-password');
+
+    if (!user) throw new Error('User not found');
+
+    return user;
+  }
+
+  @Mutation(() => User)
+  async addUser(
+    @Args('addUserInput')
+    { name, email, password }: AddUserInput,
+  ): Promise<UserResponse> {
+    const hashedPassword = await this.userService.hash(password);
+
+    const user = await this.userService.create({
+      name,
+      email,
+      password: hashedPassword,
+      refreshTokenVersion: 0,
+      isAdmin: false,
+    });
+
+    return user;
+  }
+
+  @Mutation(() => User)
+  @UseGuards(AuthGuard)
+  async updateUserProfile(
+    @UserId() userId: string,
+    @Args('updateBody') updateBody: UpdateUserProfileInput,
+  ): Promise<UserResponse> {
+    const updatedUser = await this.userService.findByIdAndUpdate(
+      userId,
+      updateBody,
+    );
+
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+
+    return {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    };
+  }
+
+  @Mutation(() => User)
+  @UseGuards(AuthGuard, AdminGuard)
+  async updateUser(
+    @Args('updateBody') updateBody: UpdateUserInput,
+    @Args('userId') userId: string,
+  ): Promise<UserResponse> {
+    const updatedUser = await this.userService.findByIdAndUpdate(
+      userId,
+      updateBody,
+    );
+
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+
+    return {
+      id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    };
+  }
+
+  @Mutation(() => MutationBasicResponse)
+  @UseGuards(AuthGuard, AdminGuard)
+  async deleteUser(
+    @Args('userId') userId: string,
+  ): Promise<MutationBasicResponse> {
+    const user = await this.userService.findById(userId);
+
+    if (user) {
+      await user.remove();
+
+      return {
+        message: 'User deleted',
+      };
+    } else {
+      throw new Error('User not found');
+    }
+  }
+
+  @Mutation(() => LoginResponse)
+  async login(
+    @Args('loginInput') { email, password }: LoginInput,
+    @Res() res: Response,
+  ): Promise<LoginResponse> {
+    const user = await this.userService.findByEmail(email);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const match = await this.userService.compare(password, user.password);
+
+    if (!match) {
+      throw new Error('Wrong credentials');
+    }
+
+    user.refreshTokenVersion = user.refreshTokenVersion + 1;
+    await user.save();
+
+    const accessToken = this.userService.createAccessToken({
+      userId: user.id,
+      isAdmin: user.isAdmin,
+    });
+    const refreshToken = this.userService.createRefreshToken({
+      userId: user.id,
+      tokenVersion: user.refreshTokenVersion,
+      isAdmin: user.isAdmin,
+    });
+
+    res.cookie('jwt', refreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return {
+      accessToken,
+    };
+  }
+
+  @Mutation(() => MutationBasicResponse)
+  logout(@Res() res: Response): MutationBasicResponse {
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    return { message: 'Logout success' };
+  }
+
+  @Mutation(() => MutationBasicResponse)
+  async revokeRefreshToken(
+    @Args('userId') userId: string,
+  ): Promise<MutationBasicResponse> {
+    const user = await this.userService.findById(userId);
+
+    if (!user) throw new Error('User not found');
+
+    user.refreshTokenVersion = user.refreshTokenVersion + 1;
+    await user.save();
+
+    return { message: 'Token revoked' };
+  }
+}

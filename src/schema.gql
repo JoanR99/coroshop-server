@@ -1,0 +1,208 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  createdAt: DateTime!
+  id: String!
+  name: String!
+  email: String!
+  isAdmin: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Product {
+  createdAt: DateTime!
+  id: String!
+  createdBy: ID!
+  name: String!
+  image: String!
+  brand: String!
+  category: String!
+  description: String!
+  rating: Float!
+  numReviews: Int!
+  price: Float!
+  countInStock: Int!
+}
+
+type MutationBasicResponse {
+  message: String!
+}
+
+type GetUsersResponse {
+  page: Float!
+  pages: Float!
+  users: [User!]!
+}
+
+type LoginResponse {
+  accessToken: String!
+}
+
+type GetProductsResponse {
+  page: Float!
+  pages: Float!
+  products: [Product!]!
+}
+
+type OrderItem2 {
+  productName: String!
+  quantity: Int!
+  image: String!
+  price: Float!
+  product: ID!
+}
+
+type ShippingAddress2 {
+  address: String!
+  city: String!
+  postalCode: String!
+  country: String!
+}
+
+type PaymentResult2 {
+  id: String!
+  status: String!
+  update_time: String!
+  email_address: String!
+}
+
+type Order {
+  createdAt: DateTime!
+  id: String!
+  orderBy: ID!
+  orderByName: String!
+  orderItems: [OrderItem2!]!
+  shippingAddress: ShippingAddress2!
+  paymentMethod: String!
+  paymentResult: PaymentResult2!
+  taxPrice: Float!
+  shippingPrice: Float!
+  totalPrice: Float!
+  isPaid: Boolean!
+  paidAt: String
+  isDelivered: Boolean!
+  deliveredAt: String
+}
+
+type Review {
+  createdAt: DateTime!
+  id: String!
+  rating: Float!
+  comment: String!
+  author: ID!
+  authorName: String!
+  product: ID!
+}
+
+type Query {
+  getUsers(getUsersInput: GetItemsInput!): GetUsersResponse!
+  getUserProfile: User!
+  getUser(userId: String!): User!
+  getProducts(getProductsInput: GetItemsInput!): GetProductsResponse!
+  getProduct(productId: String!): Product!
+  getOrders: [Order!]!
+  getUserOrders: [Order!]!
+  getOrderById(orderId: String!): Order!
+  getReviews(productId: String!): [Review!]!
+}
+
+input GetItemsInput {
+  keyword: String!
+  pageSize: Int!
+  pageNumber: Int!
+}
+
+type Mutation {
+  addUser(addUserInput: AddUserInput!): User!
+  updateUserProfile(updateBody: UpdateUserProfileInput!): User!
+  updateUser(updateBody: UpdateUserInput!, userId: String!): User!
+  deleteUser(userId: String!): MutationBasicResponse!
+  login(loginInput: LoginInput!): LoginResponse!
+  logout: MutationBasicResponse!
+  revokeRefreshToken(userId: String!): MutationBasicResponse!
+  addProduct(addProductInput: AddProductInput!): Product!
+  deleteProduct(productId: String!): MutationBasicResponse!
+  updateProduct(productBody: AddProductInput!, productId: String!): Product!
+  addOrder(orderBody: AddOrderInput!): Order!
+  updateOrderToPaid(orderId: String!, paymentResultBody: UpdateOrderInput!): Order!
+  updateOrderToDelivered(orderId: String!): Order!
+  addReview(reviewBody: ReviewInput!, productId: String!): MutationBasicResponse!
+  updateReview(reviewId: String!, updateBody: ReviewInput!): Review!
+  deleteReview(reviewId: String!): MutationBasicResponse!
+}
+
+input AddUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserProfileInput {
+  name: String
+  email: String
+  password: String
+}
+
+input UpdateUserInput {
+  name: String
+  email: String
+  isAdmin: Boolean
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input AddProductInput {
+  name: String!
+  price: Float!
+  image: String!
+  brand: String!
+  category: String!
+  countInStock: Int!
+  description: String!
+}
+
+input AddOrderInput {
+  orderItems: [OrderItem!]!
+  shippingAddress: ShippingAddress!
+  paymentMethod: String!
+  itemsPrice: Float!
+  taxPrice: Float!
+  shippingPrice: Float!
+  totalPrice: Float!
+}
+
+input OrderItem {
+  productName: String!
+  quantity: Int!
+  image: String!
+  price: Float!
+  product: ID!
+}
+
+input ShippingAddress {
+  address: String!
+  city: String!
+  postalCode: String!
+  country: String!
+}
+
+input UpdateOrderInput {
+  id: String!
+  status: String!
+  update_time: String!
+  email_address: String!
+}
+
+input ReviewInput {
+  rating: Float!
+  comment: String!
+}

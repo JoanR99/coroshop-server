@@ -1,0 +1,119 @@
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { UserService } from 'src/user/user.service';
+
+import { AddProductInput, GetProductsResponse } from './product.types';
+import { Product } from './product.model';
+import { ProductService } from './product.service';
+import { AuthGuard } from 'src/auth.guard';
+import { AdminGuard } from 'src/admin.guard';
+import { UserId } from 'src/context.decorators';
+import { MutationBasicResponse, GetItemsInput } from 'src/shared/shared.types';
+
+@Resolver((of) => Product)
+export class ProductResolver {
+  constructor(
+    private productService: ProductService,
+    private userService: UserService,
+  ) {}
+
+  @Query(() => GetProductsResponse)
+  async getProducts(
+    @Args('getProductsInput')
+    { pageNumber, pageSize, keyword }: GetItemsInput,
+  ): Promise<GetProductsResponse> {
+    const keywordRegex = keyword
+      ? {
+          name: {
+            $regex: keyword,
+            $options: 'i',
+          },
+        }
+      : {};
+
+    const count = await this.productService.countByRegex(keywordRegex);
+
+    const pageS = !pageSize || pageSize < 1 ? 12 : pageSize;
+
+    const pages = Math.ceil(count / pageS);
+
+    const page =
+      !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
+
+    const products = await this.productService
+      .findAllByRegex(keywordRegex)
+      .limit(pageS)
+      .skip(pageS * (page - 1));
+
+    return {
+      products,
+      page,
+      pages,
+    };
+  }
+
+  @Query(() => Product)
+  async getProduct(@Args('productId') productId: string): Promise<Product> {
+    const product = await this.productService.findById(productId);
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return product;
+  }
+
+  @Mutation(() => Product)
+  @UseGuards(AuthGuard, AdminGuard)
+  async addProduct(
+    @Args('addProductInput') product: AddProductInput,
+    @UserId() userId: string,
+  ): Promise<Product> {
+    const user = await this.userService.findById(userId);
+
+    const createdProduct = await this.productService.create({
+      ...product,
+      createdBy: user?.id,
+      rating: 0,
+      numReviews: 0,
+    });
+
+    return createdProduct;
+  }
+
+  @Mutation(() => MutationBasicResponse)
+  @UseGuards(AuthGuard, AdminGuard)
+  async deleteProduct(
+    @Args('productId') productId: string,
+  ): Promise<MutationBasicResponse> {
+    const product = await this.productService.findById(productId);
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    await this.productService.deleteById(productId);
+
+    return {
+      message: 'Product deleted',
+    };
+  }
+
+  @Mutation(() => Product)
+  @UseGuards(AuthGuard, AdminGuard)
+  async updateProduct(
+    @Args('productBody') productBody: AddProductInput,
+    @Args('productId') productId: string,
+  ): Promise<Product> {
+    const product = await this.productService.findByIdAndUpdate(
+      productId,
+      productBody,
+    );
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return product;
+  }
+}
