@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
-import { AuthGuard } from 'src/auth.guard';
-import { AdminGuard } from 'src/admin.guard';
-import { UserId, Res } from 'src/context.decorators';
-import { MutationBasicResponse, GetItemsInput } from 'src/shared/shared.types';
+import { AuthGuard } from '../auth.guard';
+import { AdminGuard } from '../admin.guard';
+import { UserId, Res } from '../context.decorators';
+import { MutationBasicResponse, GetItemsInput } from '../shared/shared.dto';
 import { User } from './user.model';
 import {
   AddUserInput,
@@ -15,12 +15,16 @@ import {
   LoginResponse,
   GetUsersResponse,
   UserResponse,
-} from './user.types';
+} from './user.dto';
 import { Response } from 'express';
+import { AuthService } from './auth.service';
 
 @Resolver()
 export class UserResolver {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
   @Query(() => GetUsersResponse)
   @UseGuards(AuthGuard, AdminGuard)
@@ -83,7 +87,7 @@ export class UserResolver {
     @Args('addUserInput')
     { name, email, password }: AddUserInput,
   ): Promise<UserResponse> {
-    const hashedPassword = await this.userService.hash(password);
+    const hashedPassword = await this.authService.hash(password);
 
     const user = await this.userService.create({
       name,
@@ -171,7 +175,7 @@ export class UserResolver {
       throw new Error('User not found');
     }
 
-    const match = await this.userService.compare(password, user.password);
+    const match = await this.authService.compare(password, user.password);
 
     if (!match) {
       throw new Error('Wrong credentials');
@@ -180,11 +184,11 @@ export class UserResolver {
     user.refreshTokenVersion = user.refreshTokenVersion + 1;
     await user.save();
 
-    const accessToken = this.userService.createAccessToken({
+    const accessToken = this.authService.createAccessToken({
       userId: user.id,
       isAdmin: user.isAdmin,
     });
-    const refreshToken = this.userService.createRefreshToken({
+    const refreshToken = this.authService.createRefreshToken({
       userId: user.id,
       tokenVersion: user.refreshTokenVersion,
       isAdmin: user.isAdmin,

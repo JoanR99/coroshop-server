@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 
 import { User } from '../user/user.model';
-import { BaseModel } from 'src/shared/base.model';
+import { BaseModel } from '../shared/base.model';
 
 @GqlType()
 export class Product extends BaseModel {

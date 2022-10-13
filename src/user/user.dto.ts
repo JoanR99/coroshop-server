@@ -2,7 +2,7 @@ import { Field, ObjectType, InputType, Int } from '@nestjs/graphql';
 import { Length, IsEmail } from 'class-validator';
 import { User } from './user.model';
 import { isValidPassword } from './isValidPassword';
-import { GetPaginatedResponse } from 'src/shared/shared.types';
+import { GetPaginatedResponse } from '../shared/shared.dto';
 
 @InputType()
 export class AddUserInput implements Partial<User> {

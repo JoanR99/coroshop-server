@@ -1,19 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
-import { BaseService } from 'src/shared/base.service';
-import { UpdateUserInput, UpdateUserProfileInput } from './user.types';
+import { BaseService } from '../shared/base.service';
+import { UpdateUserInput, UpdateUserProfileInput } from './user.dto';
 import { User } from './user.model';
-import { sign, verify } from 'jsonwebtoken';
-import { hash, compare } from 'bcrypt';
-import * as dotenv from 'dotenv';
-dotenv.config();
-
-export type TokenPayload = {
-  userId: string;
-  tokenVersion: number;
-  isAdmin: boolean;
-};
+import { hash } from 'bcrypt';
 
 type QueryUsers = { name: { $regex: string; $options: string } } | {};
 
@@ -25,11 +16,6 @@ export class UserService extends BaseService<User> {
   ) {
     super(userModel);
   }
-
-  private readonly accessTokenSecret = process.env
-    .ACCESS_TOKEN_SECRET as string;
-  private readonly refreshTokenSecret = process.env
-    .REFRESH_TOKEN_SECRET as string;
 
   countByRegex(keyword: QueryUsers) {
     return this.userModel.countDocuments({ ...keyword });
@@ -49,33 +35,5 @@ export class UserService extends BaseService<User> {
 
   findByEmail(email: string) {
     return this.userModel.findOne({ email });
-  }
-
-  validateToken(token: string, publicKey: string) {
-    return verify(token, publicKey) as TokenPayload;
-  }
-
-  hash(password: string) {
-    return hash(password, 10);
-  }
-
-  compare(password: string, encryptedPassword: string) {
-    return compare(password, encryptedPassword);
-  }
-
-  createAccessToken(body: { userId: string; isAdmin: boolean }) {
-    return sign(body, this.accessTokenSecret, {
-      expiresIn: '15m',
-    });
-  }
-
-  createRefreshToken(body: {
-    userId: string;
-    tokenVersion: number;
-    isAdmin: boolean;
-  }) {
-    return sign(body, this.refreshTokenSecret, {
-      expiresIn: '7d',
-    });
   }
 }

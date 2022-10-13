@@ -1,6 +1,6 @@
 import { Prop } from '@typegoose/typegoose';
 import { Field as GqlField, ObjectType as GqlType } from '@nestjs/graphql';
-import { BaseModel } from 'src/shared/base.model';
+import { BaseModel } from '../shared/base.model';
 
 @GqlType()
 export class User extends BaseModel {

@@ -1,9 +1,9 @@
 import { Field, InputType, ObjectType, Int, Float } from '@nestjs/graphql';
-import { GetPaginatedResponse } from 'src/shared/shared.types';
+import { GetPaginatedResponse } from '../shared/shared.dto';
 import { Product } from './product.model';
 
 @InputType()
-export class AddProductInput {
+export class ProductInput {
   @Field()
   name: string;
 

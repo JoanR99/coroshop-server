@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Review } from './review.model';
 import { ReviewService } from './review.service';
-import { UserModule } from 'src/user/user.module';
-import { ProductModule } from 'src/product/product.module';
+import { UserModule } from '../user/user.module';
+import { ProductModule } from '../product/product.module';
 import { ReviewResolver } from './review.resolver';
 
 @Module({

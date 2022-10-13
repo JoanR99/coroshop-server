@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { AuthService } from 'src/user/auth.service';
 import { UserService } from 'src/user/user.service';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
@@ -9,6 +10,7 @@ dotenv.config();
 export class ApiController {
   constructor(
     private userService: UserService,
+    private authService: AuthService,
     private apiService: ApiService,
   ) {}
 
@@ -22,16 +24,14 @@ export class ApiController {
 
     const refreshToken = cookies.jwt;
 
-    const secretToken = process.env.REFRESH_TOKEN_SECRET!;
-
-    tokenPayload = this.userService.validateToken(refreshToken, secretToken);
+    tokenPayload = this.authService.validateRefreshToken(refreshToken);
 
     const user = await this.userService.findById(tokenPayload.userId);
 
     if (!user || user.refreshTokenVersion !== tokenPayload.tokenVersion)
       return res.sendStatus(403);
 
-    const accessToken = this.userService.createAccessToken({
+    const accessToken = this.authService.createAccessToken({
       userId: tokenPayload.userId,
       isAdmin: tokenPayload.isAdmin,
     });

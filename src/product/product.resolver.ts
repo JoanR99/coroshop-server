@@ -1,14 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
-import { AddProductInput, GetProductsResponse } from './product.types';
+import { ProductInput, GetProductsResponse } from './product.dto';
 import { Product } from './product.model';
 import { ProductService } from './product.service';
-import { AuthGuard } from 'src/auth.guard';
-import { AdminGuard } from 'src/admin.guard';
-import { UserId } from 'src/context.decorators';
-import { MutationBasicResponse, GetItemsInput } from 'src/shared/shared.types';
+import { AuthGuard } from '../auth.guard';
+import { AdminGuard } from '../admin.guard';
+import { UserId } from '../context.decorators';
+import { MutationBasicResponse, GetItemsInput } from '../shared/shared.dto';
 
 @Resolver((of) => Product)
 export class ProductResolver {
@@ -41,7 +41,7 @@ export class ProductResolver {
       !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
 
     const products = await this.productService
-      .findAllByRegex(keywordRegex)
+      .findByRegex(keywordRegex)
       .limit(pageS)
       .skip(pageS * (page - 1));
 
@@ -66,7 +66,7 @@ export class ProductResolver {
   @Mutation(() => Product)
   @UseGuards(AuthGuard, AdminGuard)
   async addProduct(
-    @Args('addProductInput') product: AddProductInput,
+    @Args('addProductInput') product: ProductInput,
     @UserId() userId: string,
   ): Promise<Product> {
     const user = await this.userService.findById(userId);
@@ -102,7 +102,7 @@ export class ProductResolver {
   @Mutation(() => Product)
   @UseGuards(AuthGuard, AdminGuard)
   async updateProduct(
-    @Args('productBody') productBody: AddProductInput,
+    @Args('productBody') productBody: ProductInput,
     @Args('productId') productId: string,
   ): Promise<Product> {
     const product = await this.productService.findByIdAndUpdate(

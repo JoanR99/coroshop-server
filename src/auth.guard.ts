@@ -1,7 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import * as dotenv from 'dotenv';
-import { UserService } from './user/user.service';
-dotenv.config();
+import { AuthService } from './user/auth.service';
 
 export type RequestWithAuth = Request & {
   headers: {
@@ -13,7 +11,7 @@ export type RequestWithAuth = Request & {
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private userService: UserService) {}
+  constructor(private authService: AuthService) {}
   canActivate(context: ExecutionContext): boolean {
     const request = context.getArgByIndex(2).req;
 
@@ -21,16 +19,18 @@ export class AuthGuard implements CanActivate {
       const authHeader =
         request.headers.authorization || request.headers.Authorization;
 
-      if (typeof authHeader === 'undefined' || Array.isArray(authHeader))
+      if (
+        typeof authHeader === 'undefined' ||
+        Array.isArray(authHeader) ||
+        !authHeader?.startsWith('Bearer ')
+      )
         return false;
-
-      if (!authHeader?.startsWith('Bearer ')) return false;
 
       const token = authHeader.split(' ')[1];
 
-      const publicKey = process.env.ACCESS_TOKEN_SECRET!;
+      const tokenPayload = this.authService.validateAccessToken(token);
 
-      const tokenPayload = this.userService.validateToken(token, publicKey);
+      if (!tokenPayload.userId) return false;
 
       request.payload = tokenPayload;
 

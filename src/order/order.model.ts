@@ -9,7 +9,7 @@ import {
 
 import { User } from '../user/user.model';
 import { Product } from '../product/product.model';
-import { BaseModel } from 'src/shared/base.model';
+import { BaseModel } from '../shared/base.model';
 
 @GqlType()
 export class OrderItem {

@@ -1,14 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 
-import { AuthGuard } from 'src/auth.guard';
-import { UserId } from 'src/context.decorators';
+import { AuthGuard } from '../auth.guard';
+import { UserId } from '../context.decorators';
 import { Review } from './review.model';
 import { ReviewService } from './review.service';
-import { ReviewInput } from './review.types';
-import { MutationBasicResponse } from 'src/shared/shared.types';
-import { ProductService } from 'src/product/product.service';
+import { ReviewInput } from './review.dto';
+import { MutationBasicResponse } from '../shared/shared.dto';
+import { ProductService } from '../product/product.service';
 
 @Resolver((of) => Review)
 export class ReviewResolver {

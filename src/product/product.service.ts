@@ -15,7 +15,7 @@ export class ProductService extends BaseService<Product> {
     super(productModel);
   }
 
-  findAllByRegex(keyword: QueryProducts) {
+  findByRegex(keyword: QueryProducts) {
     return this.productModel.find({ ...keyword });
   }
 

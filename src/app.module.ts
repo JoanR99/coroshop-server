@@ -10,7 +10,13 @@ import { OrderModule } from './order/order.module';
 import { ReviewModule } from './review/review.module';
 import { CredentialsMiddleware } from './credentials.middleware';
 import { ApiModule } from './api/api.module';
-import { ApiController } from './api/api.controller';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const MONGO_URI: string =
+  process.env.NODE_ENV === 'development'
+    ? process.env.MONGO_URI
+    : process.env.MONGO_URI_TEST;
 
 @Module({
   imports: [
@@ -28,7 +34,7 @@ import { ApiController } from './api/api.controller';
       path: '/api/graphql',
       cors: false,
     }),
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/coroshop'),
+    MongooseModule.forRoot(MONGO_URI),
   ],
 })
 export class AppModule {

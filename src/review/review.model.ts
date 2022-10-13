@@ -8,7 +8,7 @@ import {
 
 import { Product } from '../product/product.model';
 import { User } from '../user/user.model';
-import { BaseModel } from 'src/shared/base.model';
+import { BaseModel } from '../shared/base.model';
 
 @GqlType()
 export class Review extends BaseModel {
