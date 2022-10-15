@@ -1,8 +1,14 @@
 import { Schema } from 'mongoose';
-import { buildSchema, prop } from '@typegoose/typegoose';
+import {
+  buildSchema,
+  ModelOptions,
+  prop,
+  Severity,
+} from '@typegoose/typegoose';
 import { Field as GqlField, ObjectType as GqlType } from '@nestjs/graphql';
 
 @GqlType()
+@ModelOptions({ options: { allowMixed: Severity.ALLOW } })
 export abstract class BaseModel {
   @GqlField((_type) => Date)
   @prop()

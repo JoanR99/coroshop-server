@@ -11,6 +11,7 @@ import { ReviewModule } from './review/review.module';
 import { CredentialsMiddleware } from './credentials.middleware';
 import { ApiModule } from './api/api.module';
 import * as dotenv from 'dotenv';
+import * as cookieParser from 'cookie-parser';
 dotenv.config();
 
 const MONGO_URI: string =
@@ -39,7 +40,7 @@ const MONGO_URI: string =
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CredentialsMiddleware).forRoutes({
+    consumer.apply(CredentialsMiddleware, cookieParser()).forRoutes({
       path: '*',
       method: RequestMethod.ALL,
     });

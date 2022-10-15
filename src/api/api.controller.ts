@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { AuthService } from 'src/user/auth.service';
-import { UserService } from 'src/user/user.service';
+import { AuthService } from '../user/auth.service';
+import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import { ApiService } from './api.service';

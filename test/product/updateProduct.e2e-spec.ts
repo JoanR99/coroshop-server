@@ -1,33 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { MongooseModule, getModelToken } from '@nestjs/mongoose';
+import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
-import { ProductModule } from '../../src/product/product.module';
-import * as cookieParser from 'cookie-parser';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import corsOptions from '../../src/corsOptions';
 import { Product } from '../../src/product/product.model';
-import { addProductMutation, updateProductMutation } from './productMutations';
+import { updateProductMutation } from './productMutations';
 import { loginMutation } from '../utils/authMutations';
 import {
   ADD_PRODUCT_INPUT,
   VALID_CREDENTIALS,
   UNAUTHORIZED_MESSAGE,
 } from '../utils/constants';
-import { UserModule } from '../../src/user/user.module';
-import { ProductResolver } from '../../src/product/product.resolver';
-import { ProductService } from '../../src/product/product.service';
 import { Connection } from 'mongoose';
-import * as dotenv from 'dotenv';
-import { getModelForClass } from '@typegoose/typegoose';
 import { User } from '../../src/user/user.model';
 import { hash } from 'bcrypt';
-
-dotenv.config();
-
-jest.setTimeout(20000);
+import { AppModule } from '../../src/app.module';
 
 describe('Update Product (e2e)', () => {
   let app: INestApplication;
@@ -35,30 +23,9 @@ describe('Update Product (e2e)', () => {
   let productModel: ReturnModelType<typeof Product>;
   let userModel: ReturnModelType<typeof User>;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ProductModule,
-        UserModule,
-        GraphQLModule.forRoot<ApolloDriverConfig>({
-          driver: ApolloDriver,
-          playground: false,
-          autoSchemaFile: true,
-          context: ({ req, res }) => ({ req, res }),
-          path: '/api/graphql',
-          cors: false,
-        }),
-        MongooseModule.forRoot(process.env.MONGO_URI_TEST, {
-          connectionFactory: (conn) => {
-            connection = conn;
-            return conn;
-          },
-        }),
-        MongooseModule.forFeature([
-          { name: Product.modelName, schema: Product.schema },
-        ]),
-      ],
-      providers: [ProductResolver, ProductService],
+      imports: [AppModule],
     }).compile();
 
     productModel = moduleFixture.get<ReturnModelType<typeof Product>>(
@@ -67,9 +34,10 @@ describe('Update Product (e2e)', () => {
     userModel = moduleFixture.get<ReturnModelType<typeof User>>(
       getModelToken(User.name),
     );
+    connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
     app.enableCors(corsOptions as any);
-    app.use(cookieParser());
+
     await app.init();
   });
 
@@ -78,9 +46,6 @@ describe('Update Product (e2e)', () => {
     for (const key in collections) {
       await collections[key].deleteMany({});
     }
-  });
-
-  afterAll(async () => {
     await app.close();
   });
 

@@ -126,9 +126,9 @@ type Mutation {
   login(loginInput: LoginInput!): LoginResponse!
   logout: MutationBasicResponse!
   revokeRefreshToken(userId: String!): MutationBasicResponse!
-  addProduct(addProductInput: AddProductInput!): Product!
+  addProduct(addProductInput: ProductInput!): Product!
   deleteProduct(productId: String!): MutationBasicResponse!
-  updateProduct(productBody: AddProductInput!, productId: String!): Product!
+  updateProduct(productBody: ProductInput!, productId: String!): Product!
   addOrder(orderBody: AddOrderInput!): Order!
   updateOrderToPaid(orderId: String!, paymentResultBody: UpdateOrderInput!): Order!
   updateOrderToDelivered(orderId: String!): Order!
@@ -160,7 +160,7 @@ input LoginInput {
   password: String!
 }
 
-input AddProductInput {
+input ProductInput {
   name: String!
   price: Float!
   image: String!
