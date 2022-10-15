@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import { hash, compare } from 'bcrypt';
+import { TokenPayload } from './middlewares/auth.middleware';
 import * as dotenv from 'dotenv';
 dotenv.config();
-
-export type TokenPayload = {
-  userId: string;
-  tokenVersion: number;
-  isAdmin: boolean;
-};
 
 @Injectable()
 export class AuthService {
