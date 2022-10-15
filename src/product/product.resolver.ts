@@ -5,9 +5,9 @@ import { UserService } from '../user/user.service';
 import { ProductInput, GetProductsResponse } from './product.dto';
 import { Product } from './product.model';
 import { ProductService } from './product.service';
-import { AuthGuard } from '../auth.guard';
-import { AdminGuard } from '../admin.guard';
-import { UserId } from '../context.decorators';
+import { AuthGuard } from '../user/guards/auth.guard';
+import { AdminGuard } from '../user/guards/admin.guard';
+import { UserId } from '../user/decorators/userId.decorator';
 import { MutationBasicResponse, GetItemsInput } from '../shared/shared.dto';
 
 @Resolver((of) => Product)

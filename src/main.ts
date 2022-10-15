@@ -1,5 +1,4 @@
 import { NestFactory } from '@nestjs/core';
-import { CorsOptions } from 'apollo-server-express';
 import { AppModule } from './app.module';
 import corsOptions from './corsOptions';
 

@@ -3,9 +3,9 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { Order } from './order.model';
 import { OrderService } from './order.service';
-import { AuthGuard } from '../auth.guard';
-import { AdminGuard } from '../admin.guard';
-import { UserId } from '../context.decorators';
+import { AuthGuard } from '../user/guards/auth.guard';
+import { AdminGuard } from '../user/guards/admin.guard';
+import { UserId } from '../user/decorators/userId.decorator';
 import { UserService } from '../user/user.service';
 import { AddOrderInput, UpdateOrderInput } from './order.dto';
 

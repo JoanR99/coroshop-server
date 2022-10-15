@@ -1,7 +1,7 @@
 import { Field, ObjectType, InputType, Int } from '@nestjs/graphql';
 import { Length, IsEmail } from 'class-validator';
 import { User } from './user.model';
-import { isValidPassword } from './isValidPassword';
+import { isValidPassword } from './decorators/isValidPassword.decorator';
 import { GetPaginatedResponse } from '../shared/shared.dto';
 
 @InputType()

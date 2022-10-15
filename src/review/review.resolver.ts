@@ -2,8 +2,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
-import { AuthGuard } from '../auth.guard';
-import { UserId } from '../context.decorators';
+import { AuthGuard } from '../user/guards/auth.guard';
+import { UserId } from '../user/decorators/userId.decorator';
 import { Review } from './review.model';
 import { ReviewService } from './review.service';
 import { ReviewInput } from './review.dto';

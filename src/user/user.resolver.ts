@@ -2,9 +2,10 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
-import { AuthGuard } from '../auth.guard';
-import { AdminGuard } from '../admin.guard';
-import { UserId, Res } from '../context.decorators';
+import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+import { Res } from '../req.decorators';
+import { UserId } from './decorators/userId.decorator';
 import { MutationBasicResponse, GetItemsInput } from '../shared/shared.dto';
 import { User } from './user.model';
 import {
