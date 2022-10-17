@@ -60,29 +60,15 @@ export class ReviewResolver {
       product: product.id,
     });
 
-    const currentReviewsOfProduct = await this.reviewService.findByProductId(
-      product.id,
-    );
-
-    await this.productService.findByIdAndUpdate(product.id, {
-      numReviews: currentReviewsOfProduct.length,
+    const newRating = await this.reviewService.ratingOfProduct(product.id);
+    const reviewsCount = await this.reviewService.count({
+      product: product.id,
     });
 
-    if (currentReviewsOfProduct.length > 0) {
-      const newRatingOfProduct =
-        currentReviewsOfProduct.reduce(
-          (acc: number, review) => review?.rating + acc,
-          0,
-        ) / currentReviewsOfProduct.length;
-
-      await this.productService.findByIdAndUpdate(product.id, {
-        rating: newRatingOfProduct,
-      });
-    } else {
-      await this.productService.findByIdAndUpdate(product.id, {
-        rating: 0,
-      });
-    }
+    await this.productService.update(product.id, {
+      rating: newRating,
+      numReviews: reviewsCount,
+    });
 
     return {
       message: 'Review added',
@@ -106,10 +92,7 @@ export class ReviewResolver {
       throw new Error('You are not authorized to perform this action');
     }
 
-    const updatedReview = await this.reviewService.findByIdAndUpdate(
-      reviewId,
-      updateBody,
-    );
+    const updatedReview = await this.reviewService.update(reviewId, updateBody);
 
     if (updatedReview) {
       const product = await this.productService.findById(
@@ -118,18 +101,10 @@ export class ReviewResolver {
 
       if (!product) throw new Error('Product not found');
 
-      const currentReviewsOfProduct = await this.reviewService.findByProductId(
-        product.id,
-      );
+      const newRating = await this.reviewService.ratingOfProduct(product.id);
 
-      const newRatingOfProduct =
-        currentReviewsOfProduct.reduce(
-          (acc: number, review) => review?.rating + acc,
-          0,
-        ) / currentReviewsOfProduct.length;
-
-      await this.productService.findByIdAndUpdate(product.id, {
-        rating: newRatingOfProduct,
+      await this.productService.update(product.id, {
+        rating: newRating,
       });
     }
 
@@ -160,29 +135,15 @@ export class ReviewResolver {
 
     if (!product) throw new Error('Product not found');
 
-    const currentReviewsOfProduct = await this.reviewService.findByProductId(
-      product.id,
-    );
-
-    await this.productService.findByIdAndUpdate(product.id, {
-      numReviews: currentReviewsOfProduct.length,
+    const newRating = await this.reviewService.ratingOfProduct(product.id);
+    const reviewsCount = await this.reviewService.count({
+      product: product.id,
     });
 
-    if (currentReviewsOfProduct.length > 0) {
-      const newRatingOfProduct =
-        currentReviewsOfProduct.reduce(
-          (acc: number, review) => review?.rating + acc,
-          0,
-        ) / currentReviewsOfProduct.length;
-
-      await this.productService.findByIdAndUpdate(product.id, {
-        rating: newRatingOfProduct,
-      });
-    } else {
-      await this.productService.findByIdAndUpdate(product.id, {
-        rating: 0,
-      });
-    }
+    await this.productService.update(product.id, {
+      rating: newRating,
+      numReviews: reviewsCount,
+    });
 
     return {
       message: 'Review deleted',

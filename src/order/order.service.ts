@@ -16,12 +16,4 @@ export class OrderService extends BaseService<Order> {
   findByUserId(userId: string) {
     return this.orderModel.find({ user: userId });
   }
-
-  findByIdAndUpdate(id: string, orderBody: Partial<Order>) {
-    return this.orderModel.findByIdAndUpdate(
-      id,
-      { ...orderBody },
-      { new: true },
-    );
-  }
 }

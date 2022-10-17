@@ -31,7 +31,7 @@ export class ProductResolver {
         }
       : {};
 
-    const count = await this.productService.countByRegex(keywordRegex);
+    const count = await this.productService.count(keywordRegex);
 
     const pageS = !pageSize || pageSize < 1 ? 12 : pageSize;
 
@@ -41,7 +41,7 @@ export class ProductResolver {
       !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
 
     const products = await this.productService
-      .findByRegex(keywordRegex)
+      .findAll(keywordRegex)
       .limit(pageS)
       .skip(pageS * (page - 1));
 
@@ -86,13 +86,11 @@ export class ProductResolver {
   async deleteProduct(
     @Args('productId') productId: string,
   ): Promise<MutationBasicResponse> {
-    const product = await this.productService.findById(productId);
+    const product = await this.productService.deleteById(productId);
 
     if (!product) {
       throw new Error('Product not found');
     }
-
-    await this.productService.deleteById(productId);
 
     return {
       message: 'Product deleted',
@@ -105,10 +103,7 @@ export class ProductResolver {
     @Args('productBody') productBody: ProductInput,
     @Args('productId') productId: string,
   ): Promise<Product> {
-    const product = await this.productService.findByIdAndUpdate(
-      productId,
-      productBody,
-    );
+    const product = await this.productService.update(productId, productBody);
 
     if (!product) {
       throw new Error('Product not found');

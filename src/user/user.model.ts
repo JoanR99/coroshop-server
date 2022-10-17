@@ -15,10 +15,10 @@ export class User extends BaseModel {
   @Prop({ required: true })
   public password!: string;
 
-  @Prop({ default: 0 })
-  public refreshTokenVersion: number;
+  @Prop({ default: 0, required: false })
+  public refreshTokenVersion?: number;
 
   @GqlField((_type) => Boolean)
-  @Prop({ required: true, default: false })
-  public isAdmin!: boolean;
+  @Prop({ default: false, required: false })
+  public isAdmin?: boolean;
 }

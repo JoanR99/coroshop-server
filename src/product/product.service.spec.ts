@@ -81,21 +81,21 @@ describe('Product Service', () => {
     });
   });
 
-  describe('findByIdAndUpdate', () => {
+  describe('update', () => {
     it('should update a product', async () => {
-      const product = await productService.findByIdAndUpdate(id, productDTO);
+      const product = await productService.update(id, productDTO);
       expect(product).toMatchObject(productDTO);
       expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        id,
+        new Types.ObjectId(id),
         { ...productDTO },
         { new: true },
       );
     });
   });
 
-  describe('countByRegex', () => {
+  describe('count', () => {
     it('should count products by regex', async () => {
-      const count = await productService.countByRegex(keywordRegex);
+      const count = await productService.count(keywordRegex);
       expect(count).toBe(1);
       expect(productModel.countDocuments).toHaveBeenCalledWith({
         ...keywordRegex,
@@ -103,9 +103,9 @@ describe('Product Service', () => {
     });
   });
 
-  describe('findByRegex', () => {
+  describe('findAll', () => {
     it('should find products by regex', async () => {
-      const products = await productService.findByRegex(keywordRegex);
+      const products = await productService.findAll(keywordRegex);
       expect(products).toMatchObject([]);
       expect(productModel.find).toHaveBeenCalledWith(keywordRegex);
     });

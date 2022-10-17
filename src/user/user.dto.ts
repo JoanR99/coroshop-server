@@ -67,17 +67,17 @@ export class GetUsersResponse extends GetPaginatedResponse {
 
 @ObjectType()
 export class UserResponse {
-  @Field({ nullable: true })
+  @Field()
   id?: string;
 
   @Field()
-  name: string;
+  name?: string;
 
   @Field()
-  email: string;
+  email?: string;
 
   @Field()
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }
 
 @ObjectType()

@@ -38,17 +38,17 @@ export class Product extends BaseModel {
 
   @GqlField((_type) => Float)
   @Prop({ default: 0 })
-  public rating: number;
+  public rating?: number;
 
   @GqlField((_type) => Int)
   @Prop({ default: 0 })
-  public numReviews: number;
+  public numReviews?: number;
 
   @GqlField((_type) => Float)
-  @Prop({ required: true, default: 0 })
+  @Prop({ required: true })
   public price!: number;
 
   @GqlField((_type) => Int)
-  @Prop({ required: true, default: 0 })
+  @Prop({ required: true })
   public countInStock!: number;
 }

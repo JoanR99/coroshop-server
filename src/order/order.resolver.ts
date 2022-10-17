@@ -63,8 +63,6 @@ export class OrderResolver {
         ...orderBody,
         orderBy: userOrder.id,
         orderByName: userOrder.name,
-        isPaid: false,
-        isDelivered: false,
       });
 
       return order;
@@ -77,7 +75,7 @@ export class OrderResolver {
     @Args('orderId') orderId: string,
     @Args('paymentResultBody') paymentResultBody: UpdateOrderInput,
   ): Promise<Order> {
-    const updatedOrder = await this.orderService.findByIdAndUpdate(orderId, {
+    const updatedOrder = await this.orderService.update(orderId, {
       paymentResult: paymentResultBody,
       isPaid: true,
       paidAt: new Date(Date.now()),
@@ -95,7 +93,7 @@ export class OrderResolver {
   async updateOrderToDelivered(
     @Args('orderId') orderId: string,
   ): Promise<Order> {
-    const updatedOrder = await this.orderService.findByIdAndUpdate(orderId, {
+    const updatedOrder = await this.orderService.update(orderId, {
       isDelivered: true,
       deliveredAt: new Date(Date.now()),
     });

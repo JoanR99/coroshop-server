@@ -31,15 +31,19 @@ describe('Product Service', () => {
               .mockImplementation((productId) =>
                 productId === id ? productDTO : null,
               ),
-            deleteById: jest.fn(),
-            create: jest.fn().mockResolvedValue(productDTO),
-            findByIdAndUpdate: jest
+            deleteById: jest
               .fn()
               .mockImplementation((productId) =>
                 productId === id ? productDTO : null,
               ),
-            countByRegex: jest.fn().mockResolvedValue(3),
-            findByRegex: jest.fn().mockReturnThis(),
+            create: jest.fn().mockResolvedValue(productDTO),
+            update: jest
+              .fn()
+              .mockImplementation((productId) =>
+                productId === id ? productDTO : null,
+              ),
+            count: jest.fn().mockResolvedValue(3),
+            findAll: jest.fn().mockReturnThis(),
             limit: jest.fn().mockReturnThis(),
             skip: jest
               .fn()
@@ -78,8 +82,8 @@ describe('Product Service', () => {
         page: 1,
         pages: 3,
       });
-      expect(productService.countByRegex).toHaveBeenCalledWith({});
-      expect(productService.findByRegex).toHaveBeenCalledWith({});
+      expect(productService.count).toHaveBeenCalledWith({});
+      expect(productService.findAll).toHaveBeenCalledWith({});
     });
   });
 
@@ -115,7 +119,6 @@ describe('Product Service', () => {
       expect(response).toMatchObject({
         message: 'Product deleted',
       });
-      expect(productService.findById).toHaveBeenCalledWith(id);
       expect(productService.deleteById).toHaveBeenCalledWith(id);
     });
 
@@ -130,10 +133,7 @@ describe('Product Service', () => {
     it('should update a product', async () => {
       const product = await productResolver.updateProduct(productDTO, id);
       expect(product).toMatchObject(productDTO);
-      expect(productService.findByIdAndUpdate).toHaveBeenCalledWith(
-        id,
-        productDTO,
-      );
+      expect(productService.update).toHaveBeenCalledWith(id, productDTO);
     });
     it('should throw error if product not not found', async () => {
       await expect(

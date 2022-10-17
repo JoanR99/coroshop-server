@@ -63,10 +63,6 @@ class ShippingAddress2 extends ShippingAddress {}
 export class PaymentResult {
   @GqlField((_type) => String)
   @Prop()
-  public id: string;
-
-  @GqlField((_type) => String)
-  @Prop()
   public status: string;
 
   @GqlField((_type) => String)
@@ -88,15 +84,15 @@ export class Order extends BaseModel {
   public orderBy!: Ref<User>;
 
   @GqlField((_type) => String)
-  @Prop()
+  @Prop({ required: true })
   public orderByName!: string;
 
   @GqlField((_type) => [OrderItem2])
-  @Prop()
+  @Prop({ required: true })
   public orderItems: OrderItem[];
 
   @GqlField((_type) => ShippingAddress2)
-  @Prop()
+  @Prop({ required: true })
   public shippingAddress!: ShippingAddress;
 
   @GqlField((_type) => String)
@@ -104,24 +100,24 @@ export class Order extends BaseModel {
   public paymentMethod!: string;
 
   @GqlField((_type) => PaymentResult2)
-  @Prop()
+  @Prop({ required: false })
   public paymentResult?: PaymentResult;
 
   @GqlField((_type) => Float)
-  @Prop({ required: true, default: 0.0 })
+  @Prop({ required: true })
   public taxPrice!: number;
 
   @GqlField((_type) => Float)
-  @Prop({ required: true, default: 0.0 })
+  @Prop({ required: true })
   public shippingPrice!: number;
 
   @GqlField((_type) => Float)
-  @Prop({ required: true, default: 0.0 })
+  @Prop({ required: true })
   public totalPrice!: number;
 
-  @GqlField((_type) => Boolean, { defaultValue: false })
+  @GqlField((_type) => Boolean)
   @Prop({ default: false, required: false })
-  public isPaid: boolean;
+  public isPaid?: boolean;
 
   @GqlField((_type) => String, { nullable: true })
   @Prop()
@@ -129,7 +125,7 @@ export class Order extends BaseModel {
 
   @GqlField((_type) => Boolean)
   @Prop({ default: false, required: false })
-  public isDelivered: boolean;
+  public isDelivered?: boolean;
 
   @GqlField((_type) => String, { nullable: true })
   @Prop()

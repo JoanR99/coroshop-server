@@ -94,8 +94,6 @@ export class UserResolver {
       name,
       email,
       password: hashedPassword,
-      refreshTokenVersion: 0,
-      isAdmin: false,
     });
 
     return user;
@@ -107,10 +105,7 @@ export class UserResolver {
     @UserId() userId: string,
     @Args('updateBody') updateBody: UpdateUserProfileInput,
   ): Promise<UserResponse> {
-    const updatedUser = await this.userService.findByIdAndUpdate(
-      userId,
-      updateBody,
-    );
+    const updatedUser = await this.userService.update(userId, updateBody);
 
     if (!updatedUser) {
       throw new Error('User not found');
@@ -130,10 +125,7 @@ export class UserResolver {
     @Args('updateBody') updateBody: UpdateUserInput,
     @Args('userId') userId: string,
   ): Promise<UserResponse> {
-    const updatedUser = await this.userService.findByIdAndUpdate(
-      userId,
-      updateBody,
-    );
+    const updatedUser = await this.userService.update(userId, updateBody);
 
     if (!updatedUser) {
       throw new Error('User not found');
@@ -152,17 +144,15 @@ export class UserResolver {
   async deleteUser(
     @Args('userId') userId: string,
   ): Promise<MutationBasicResponse> {
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.deleteById(userId);
 
-    if (user) {
-      await user.remove();
-
-      return {
-        message: 'User deleted',
-      };
-    } else {
+    if (!user) {
       throw new Error('User not found');
     }
+
+    return {
+      message: 'User deleted',
+    };
   }
 
   @Mutation(() => LoginResponse)

@@ -5,7 +5,7 @@ import {
   prop,
   Severity,
 } from '@typegoose/typegoose';
-import { Field as GqlField, ObjectType as GqlType } from '@nestjs/graphql';
+import { Field as GqlField, ID, ObjectType as GqlType } from '@nestjs/graphql';
 
 @GqlType()
 @ModelOptions({ options: { allowMixed: Severity.ALLOW } })
@@ -17,7 +17,7 @@ export abstract class BaseModel {
   @prop()
   updatedAt?: Date;
 
-  @GqlField((_type) => String)
+  @GqlField((_type) => ID)
   id?: string;
 
   static get schema(): Schema {

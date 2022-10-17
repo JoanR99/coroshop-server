@@ -96,22 +96,22 @@ export abstract class BaseService<T extends BaseModel> {
     }
   }
 
-  update(item: T) {
-    return this.model.findByIdAndUpdate(BaseService.toObjectId(item.id), item, {
+  update(itemId: string, item: Partial<T>) {
+    return this.model.findByIdAndUpdate(BaseService.toObjectId(itemId), item, {
       new: true,
     });
   }
 
-  async updateAsync(item: T): Promise<DocumentType<T>> {
+  async updateAsync(itemId: string, item: T): Promise<DocumentType<T>> {
     try {
-      return await this.update(item).exec();
+      return await this.update(itemId, item).exec();
     } catch (e) {
       BaseService.throwMongoError(e);
     }
   }
 
   count(filter = {}) {
-    return this.model.count(filter);
+    return this.model.countDocuments(filter);
   }
 
   async countAsync(filter = {}): Promise<number> {

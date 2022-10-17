@@ -17,22 +17,6 @@ export class UserService extends BaseService<User> {
     super(userModel);
   }
 
-  countByRegex(keyword: QueryUsers) {
-    return this.userModel.countDocuments({ ...keyword });
-  }
-
-  async findByIdAndUpdate(
-    userId: string,
-    updateBody: UpdateUserProfileInput | UpdateUserInput,
-  ) {
-    if ('password' in updateBody) {
-      const hashedPassword = await hash(updateBody.password!, 10);
-      updateBody.password = hashedPassword;
-    }
-
-    return this.userModel.findByIdAndUpdate(userId, updateBody, { new: true });
-  }
-
   findByEmail(email: string) {
     return this.userModel.findOne({ email });
   }
