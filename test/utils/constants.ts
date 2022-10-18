@@ -29,4 +29,5 @@ export const BAD_ID =
   'Argument passed in must be a string of 12 bytes or a string of 24 hex characters or an integer';
 
 export const PRODUCT_NOT_FOUND = 'Product not found';
+export const USER_NOT_FOUND = 'User not found';
 export const UNDEFINED_STRING = 'of required type "String!" was not provided.';

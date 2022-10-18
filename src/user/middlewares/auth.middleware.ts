@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service';
 
 export type TokenPayload = {
   userId: string;
-  tokenVersion: number;
+  tokenVersion?: number;
   isAdmin: boolean;
 };
 

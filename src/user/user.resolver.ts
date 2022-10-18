@@ -32,7 +32,6 @@ export class UserResolver {
   async getUsers(
     @Args('getUsersInput') { pageNumber, pageSize, keyword }: GetItemsInput,
   ): Promise<GetUsersResponse> {
-    const page = pageNumber || 1;
     const keywordRegex = keyword
       ? {
           name: {
@@ -44,13 +43,18 @@ export class UserResolver {
 
     const count = await this.userService.count(keywordRegex);
 
+    const pageLength = !pageSize || pageSize < 1 ? 12 : pageSize;
+
+    const pages = Math.ceil(count / pageLength);
+
+    const page =
+      !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
+
     const users = await this.userService
       .findAll(keywordRegex)
       .select('-password -refreshTokenVersion')
-      .limit(pageSize)
-      .skip(pageSize * (page - 1));
-
-    const pages = Math.ceil(count / pageSize);
+      .limit(pageLength)
+      .skip(pageLength * (page - 1));
 
     return {
       users,

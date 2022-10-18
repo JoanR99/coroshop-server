@@ -1,6 +1,6 @@
 import { gql } from 'apollo-server-express';
 
-export const addUser = gql`
+export const addUserMutation = gql`
   mutation AddUser($addUserInput: AddUserInput!) {
     addUser(addUserInput: $addUserInput) {
       id
@@ -11,7 +11,7 @@ export const addUser = gql`
   }
 `;
 
-export const updateUserProfile = gql`
+export const updateUserProfileMutation = gql`
   mutation UpdateUserProfile($updateBody: UpdateUserProfileInput!) {
     updateUserProfile(updateBody: $updateBody) {
       id
@@ -22,7 +22,7 @@ export const updateUserProfile = gql`
   }
 `;
 
-export const deleteUser = gql`
+export const deleteUserMutation = gql`
   mutation DeleteUser($userId: String!) {
     deleteUser(userId: $userId) {
       message
@@ -30,8 +30,8 @@ export const deleteUser = gql`
   }
 `;
 
-export const updateUser = gql`
-  mutation UpdateUser($updateBody: UpdateUser!, $userId: String!) {
+export const updateUserMutation = gql`
+  mutation UpdateUser($updateBody: UpdateUserInput!, $userId: String!) {
     updateUser(updateBody: $updateBody, userId: $userId) {
       id
       name

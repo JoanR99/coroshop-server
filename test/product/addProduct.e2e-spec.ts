@@ -6,7 +6,7 @@ import { ReturnModelType } from '@typegoose/typegoose/lib/types';
 import corsOptions from '../../src/corsOptions';
 import { Product } from '../../src/product/product.model';
 import { addProductMutation } from './productMutations';
-import { loginMutation } from '../utils/authMutations';
+import { loginMutation } from '../user/authMutations';
 import {
   ADD_PRODUCT_INPUT,
   VALID_CREDENTIALS,
