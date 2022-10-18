@@ -94,7 +94,7 @@ describe('Product Service', () => {
       expect(productService.findById).toHaveBeenCalledWith(id);
     });
 
-    it('should throw error if product not not found', async () => {
+    it('should throw error if product not found', async () => {
       await expect(
         productResolver.getProduct('63482cd0316e058ac32adfe2'),
       ).rejects.toThrowError();
@@ -122,7 +122,7 @@ describe('Product Service', () => {
       expect(productService.deleteById).toHaveBeenCalledWith(id);
     });
 
-    it('should throw error if product not not found', async () => {
+    it('should throw error if product not found', async () => {
       await expect(
         productResolver.deleteProduct('63482cd0316e058ac32adfe2'),
       ).rejects.toThrowError();
@@ -135,7 +135,7 @@ describe('Product Service', () => {
       expect(product).toMatchObject(productDTO);
       expect(productService.update).toHaveBeenCalledWith(id, productDTO);
     });
-    it('should throw error if product not not found', async () => {
+    it('should throw error if product not found', async () => {
       await expect(
         productResolver.updateProduct(productDTO, '63482cd0316e058ac32adfe2'),
       ).rejects.toThrowError();

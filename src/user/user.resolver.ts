@@ -46,6 +46,7 @@ export class UserResolver {
 
     const users = await this.userService
       .findAll(keywordRegex)
+      .select('-password -refreshTokenVersion')
       .limit(pageSize)
       .skip(pageSize * (page - 1));
 
@@ -61,7 +62,7 @@ export class UserResolver {
   @Query(() => User)
   @UseGuards(AuthGuard)
   async getUserProfile(@UserId() userId: string): Promise<UserResponse> {
-    const user = await this.userService.findById(userId).select('-password');
+    const user = await this.userService.findById(userId);
 
     if (!user) throw new Error('User not found');
 
@@ -76,11 +77,16 @@ export class UserResolver {
   @Query(() => User)
   @UseGuards(AuthGuard, AdminGuard)
   async getUser(@Args('userId') userId: string): Promise<UserResponse> {
-    const user = await this.userService.findById(userId).select('-password');
+    const user = await this.userService.findById(userId);
 
     if (!user) throw new Error('User not found');
 
-    return user;
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
   }
 
   @Mutation(() => User)
@@ -105,6 +111,9 @@ export class UserResolver {
     @UserId() userId: string,
     @Args('updateBody') updateBody: UpdateUserProfileInput,
   ): Promise<UserResponse> {
+    if ('password' in updateBody) {
+      updateBody.password = await this.authService.hash(updateBody.password);
+    }
     const updatedUser = await this.userService.update(userId, updateBody);
 
     if (!updatedUser) {
@@ -172,8 +181,9 @@ export class UserResolver {
       throw new Error('Wrong credentials');
     }
 
-    user.refreshTokenVersion = user.refreshTokenVersion + 1;
-    await user.save();
+    await this.userService.update(user.id, {
+      refreshTokenVersion: user.refreshTokenVersion + 1,
+    });
 
     const accessToken = this.authService.createAccessToken({
       userId: user.id,
@@ -217,8 +227,9 @@ export class UserResolver {
 
     if (!user) throw new Error('User not found');
 
-    user.refreshTokenVersion = user.refreshTokenVersion + 1;
-    await user.save();
+    await this.userService.update(user.id, {
+      refreshTokenVersion: user.refreshTokenVersion + 1,
+    });
 
     return { message: 'Token revoked' };
   }

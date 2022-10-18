@@ -8,7 +8,10 @@ dotenv.config();
 @Injectable()
 export class AuthService {
   validateAccessToken(token) {
-    return verify(token, process.env.ACCESS_TOKEN_SECRET) as TokenPayload;
+    return verify(token, process.env.ACCESS_TOKEN_SECRET) as Omit<
+      TokenPayload,
+      'tokenVersion'
+    >;
   }
 
   validateRefreshToken(token) {

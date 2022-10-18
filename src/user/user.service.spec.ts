@@ -3,7 +3,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
 import { UserService } from './user.service';
 import { User } from './user.model';
-import { ADD_PRODUCT_INPUT } from '../../test/utils/constants';
 import { Types } from 'mongoose';
 
 describe('Product Service', () => {
