@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
@@ -10,6 +10,7 @@ import {
   VALID_CREDENTIALS,
   BAD_INT_INPUT,
   BAD_STRING_INPUT,
+  BAD_REQUEST,
 } from '../utils/constants';
 
 import { Connection } from 'mongoose';
@@ -37,6 +38,7 @@ describe('Get Products (e2e)', () => {
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
     app.enableCors(corsOptions as any);
+    app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
 
@@ -190,10 +192,8 @@ describe('Get Products (e2e)', () => {
           .includes(BAD_STRING_INPUT),
       ).toBeTruthy();
     });
-  });
 
-  describe('Bad inputs returning default properties cases', () => {
-    it('should return first page when pageNumber argument is below 1', async () => {
+    it('should return error message when pageNumber argument is below 1', async () => {
       const user = await register({
         ...VALID_CREDENTIALS,
         name: 'user',
@@ -206,13 +206,31 @@ describe('Get Products (e2e)', () => {
         keyword: '',
       });
 
-      expect(
-        (response.data as GetProductsResponse).getProducts.products.length,
-      ).toBe(1);
-      expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
-      expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
+      expect(response.errors.map((error) => error.message)[0]).toBe(
+        BAD_REQUEST,
+      );
     });
 
+    it('should return error message when pageSize argument is below 1', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(13, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 2,
+        pageSize: 0,
+        keyword: '',
+      });
+
+      expect(response.errors.map((error) => error.message)[0]).toBe(
+        BAD_REQUEST,
+      );
+    });
+  });
+
+  describe('Bad inputs returning default properties cases', () => {
     it('should return first page when pageNumber parameter is greater than current possible pages', async () => {
       const user = await register({
         ...VALID_CREDENTIALS,
@@ -231,26 +249,6 @@ describe('Get Products (e2e)', () => {
       ).toBe(1);
       expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
       expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
-    });
-
-    it('should set pageSize to 12 and return correct products and pagination data when pageSize argument is below 1', async () => {
-      const user = await register({
-        ...VALID_CREDENTIALS,
-        name: 'user',
-      });
-      await createProducts(13, user.id, user.name);
-
-      const response = await getProducts({
-        pageNumber: 2,
-        pageSize: 0,
-        keyword: '',
-      });
-
-      expect(
-        (response.data as GetProductsResponse).getProducts.products.length,
-      ).toBe(1);
-      expect((response.data as GetProductsResponse).getProducts.page).toBe(2);
-      expect((response.data as GetProductsResponse).getProducts.pages).toBe(2);
     });
   });
 

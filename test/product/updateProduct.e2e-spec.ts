@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
@@ -37,6 +37,7 @@ describe('Update Product (e2e)', () => {
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
     app.enableCors(corsOptions as any);
+    app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
   });

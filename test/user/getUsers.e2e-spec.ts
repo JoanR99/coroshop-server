@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
 import corsOptions from '../../src/corsOptions';
 import {
   VALID_CREDENTIALS,
-  BAD_ID,
-  USER_NOT_FOUND,
+  BAD_REQUEST,
   UNAUTHORIZED_MESSAGE,
   BAD_INT_INPUT,
   BAD_STRING_INPUT,
@@ -17,7 +16,7 @@ import { Connection } from 'mongoose';
 import { User } from '../../src/user/user.model';
 import { hash } from 'bcrypt';
 import { AppModule } from '../../src/app.module';
-import { getUserQuery, getUsersQuery } from './userQueries';
+import { getUsersQuery } from './userQueries';
 import { loginMutation } from './authMutations';
 
 describe('Get Users (e2e)', () => {
@@ -36,6 +35,7 @@ describe('Get Users (e2e)', () => {
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
     app.enableCors(corsOptions as any);
+    app.useGlobalPipes(new ValidationPipe());
 
     await app.init();
   });
@@ -76,9 +76,6 @@ describe('Get Users (e2e)', () => {
       });
     }
   };
-
-  const deleteUser = async (userId: string) =>
-    userModel.findByIdAndDelete(userId);
 
   type GetUsersInput = {
     pageSize?: any;
@@ -270,10 +267,8 @@ describe('Get Users (e2e)', () => {
           .includes(BAD_STRING_INPUT),
       ).toBeTruthy();
     });
-  });
 
-  describe('Bad inputs returning default properties cases', () => {
-    it('should return first page when pageNumber argument is below 1', async () => {
+    it('should return error message when pageNumber argument is below 1', async () => {
       await register({
         ...VALID_CREDENTIALS,
         name: 'user',
@@ -293,11 +288,38 @@ describe('Get Users (e2e)', () => {
         { accessToken },
       );
 
-      expect((response.data as GetUsersResponse).getUsers.users.length).toBe(1);
-      expect((response.data as GetUsersResponse).getUsers.page).toBe(1);
-      expect((response.data as GetUsersResponse).getUsers.pages).toBe(2);
+      expect(response.errors.map((error) => error.message)[0]).toBe(
+        BAD_REQUEST,
+      );
     });
 
+    it('should return error message when pageSize argument is below 1', async () => {
+      await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+        isAdmin: true,
+      });
+      const loginResponse = await login(VALID_CREDENTIALS);
+      const accessToken = (loginResponse.data as LoginResponse).login
+        .accessToken;
+      await createUsers(13);
+
+      const response = await getUsers(
+        {
+          pageNumber: 2,
+          pageSize: 0,
+          keyword: '',
+        },
+        { accessToken },
+      );
+
+      expect(response.errors.map((error) => error.message)[0]).toBe(
+        BAD_REQUEST,
+      );
+    });
+  });
+
+  describe('Bad inputs returning default properties cases', () => {
     it('should return first page when pageNumber parameter is greater than current possible pages', async () => {
       await register({
         ...VALID_CREDENTIALS,
@@ -319,31 +341,6 @@ describe('Get Users (e2e)', () => {
       );
 
       expect((response.data as GetUsersResponse).getUsers.users.length).toBe(1);
-      expect((response.data as GetUsersResponse).getUsers.page).toBe(2);
-      expect((response.data as GetUsersResponse).getUsers.pages).toBe(2);
-    });
-
-    it('should set pageSize to 12 and return correct products and pagination data when pageSize argument is below 1', async () => {
-      await register({
-        ...VALID_CREDENTIALS,
-        name: 'user',
-        isAdmin: true,
-      });
-      const loginResponse = await login(VALID_CREDENTIALS);
-      const accessToken = (loginResponse.data as LoginResponse).login
-        .accessToken;
-      await createUsers(13);
-
-      const response = await getUsers(
-        {
-          pageNumber: 2,
-          pageSize: 0,
-          keyword: '',
-        },
-        { accessToken },
-      );
-
-      expect((response.data as GetUsersResponse).getUsers.users.length).toBe(2);
       expect((response.data as GetUsersResponse).getUsers.page).toBe(2);
       expect((response.data as GetUsersResponse).getUsers.pages).toBe(2);
     });

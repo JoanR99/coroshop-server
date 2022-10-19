@@ -15,7 +15,7 @@ import { Connection } from 'mongoose';
 import { User } from '../../src/user/user.model';
 import { hash } from 'bcrypt';
 import { AppModule } from '../../src/app.module';
-import { getUserQuery } from './userQueries';
+import { getUserProfileQuery } from './userQueries';
 import { loginMutation } from './authMutations';
 
 describe('Get Product (e2e)', () => {
@@ -69,15 +69,14 @@ describe('Get Product (e2e)', () => {
   const deleteUser = async (userId: string) =>
     userModel.findByIdAndDelete(userId);
 
-  type GetUserResponse = {
-    getUser: Omit<User, 'password' | 'refreshTokenVersion'>;
+  type GetUserProfileResponse = {
+    getUserProfile: Omit<User, 'password' | 'refreshTokenVersion'>;
   };
 
-  const getUser = (userId: string, options: { accessToken?: string } = {}) => {
+  const getUserProfile = (options: { accessToken?: string } = {}) => {
     const agent = request(app.getHttpServer())
       .path('/api/graphql')
-      .query(getUserQuery)
-      .variables({ userId });
+      .query(getUserProfileQuery);
 
     if ('accessToken' in options) {
       agent.set('Authorization', `Bearer ${options.accessToken}`);
@@ -104,48 +103,13 @@ describe('Get Product (e2e)', () => {
       .variables({ loginInput });
 
   describe('Fail cases', () => {
-    it('should  return error message when userId argument is not a valid id', async () => {
-      await register({
-        ...VALID_CREDENTIALS,
-        name: 'user',
-        isAdmin: true,
-      });
-      const loginResponse = await login(VALID_CREDENTIALS);
-      const accessToken = (loginResponse.data as LoginResponse).login
-        .accessToken;
-      const response = await getUser('ididididididididididid', { accessToken });
-
-      expect(
-        response.errors?.map((error) => error.message)[0].includes(BAD_ID),
-      ).toBeTruthy();
-    });
-
     it('should  return error message on request without accessToken (login user)', async () => {
       const user = await register({
         ...VALID_CREDENTIALS,
         name: 'user',
       });
 
-      const response = await getUser(user.id);
-
-      expect(
-        response.errors
-          ?.map((error) => error.message)[0]
-          .includes(UNAUTHORIZED_MESSAGE),
-      ).toBeTruthy();
-    });
-
-    it('should  return error message when logged user is not and admin', async () => {
-      const user = await register({
-        ...VALID_CREDENTIALS,
-        name: 'user',
-      });
-      const loginResponse = await login(VALID_CREDENTIALS);
-      const accessToken = (loginResponse.data as LoginResponse).login
-        .accessToken;
-      await deleteUser(user.id);
-
-      const response = await getUser(user.id, { accessToken });
+      const response = await getUserProfile();
 
       expect(
         response.errors
@@ -165,7 +129,7 @@ describe('Get Product (e2e)', () => {
         .accessToken;
       await deleteUser(user.id);
 
-      const response = await getUser(user.id, { accessToken });
+      const response = await getUserProfile({ accessToken });
 
       expect(
         response.errors
@@ -186,14 +150,11 @@ describe('Get Product (e2e)', () => {
       const accessToken = (loginResponse.data as LoginResponse).login
         .accessToken;
 
-      const response = await getUser(user.id, { accessToken });
+      const response = await getUserProfile({ accessToken });
 
-      expect(Object.keys((response.data as GetUserResponse).getUser)).toEqual([
-        'id',
-        'name',
-        'email',
-        'isAdmin',
-      ]);
+      expect(
+        Object.keys((response.data as GetUserProfileResponse).getUserProfile),
+      ).toEqual(['id', 'name', 'email', 'isAdmin']);
     });
 
     it('should return correct product data', async () => {
@@ -206,9 +167,11 @@ describe('Get Product (e2e)', () => {
       const accessToken = (loginResponse.data as LoginResponse).login
         .accessToken;
 
-      const response = await getUser(user.id, { accessToken });
+      const response = await getUserProfile({ accessToken });
 
-      expect((response.data as GetUserResponse).getUser.id).toBe(user.id);
+      expect((response.data as GetUserProfileResponse).getUserProfile.id).toBe(
+        user.id,
+      );
     });
   });
 });

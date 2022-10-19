@@ -43,18 +43,15 @@ export class UserResolver {
 
     const count = await this.userService.count(keywordRegex);
 
-    const pageLength = !pageSize || pageSize < 1 ? 12 : pageSize;
+    const pages = Math.ceil(count / pageSize);
 
-    const pages = Math.ceil(count / pageLength);
-
-    const page =
-      !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
+    const page = pageNumber > pages ? 1 : pageNumber;
 
     const users = await this.userService
       .findAll(keywordRegex)
       .select('-password -refreshTokenVersion')
-      .limit(pageLength)
-      .skip(pageLength * (page - 1));
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
 
     return {
       users,

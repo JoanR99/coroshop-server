@@ -33,17 +33,14 @@ export class ProductResolver {
 
     const count = await this.productService.count(keywordRegex);
 
-    const pageLength = !pageSize || pageSize < 1 ? 12 : pageSize;
+    const pages = Math.ceil(count / pageSize);
 
-    const pages = Math.ceil(count / pageLength);
-
-    const page =
-      !pageNumber || pageNumber < 1 || pageNumber > pages ? 1 : pageNumber;
+    const page = pageNumber > pages ? 1 : pageNumber;
 
     const products = await this.productService
       .findAll(keywordRegex)
-      .limit(pageLength)
-      .skip(pageLength * (page - 1));
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
 
     return {
       products,

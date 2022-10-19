@@ -31,3 +31,4 @@ export const BAD_ID =
 export const PRODUCT_NOT_FOUND = 'Product not found';
 export const USER_NOT_FOUND = 'User not found';
 export const UNDEFINED_STRING = 'of required type "String!" was not provided.';
+export const BAD_REQUEST = 'Bad Request Exception';
