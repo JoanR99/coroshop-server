@@ -221,6 +221,7 @@ export class UserResolver {
   }
 
   @Mutation(() => MutationBasicResponse)
+  @UseGuards(AuthGuard, AdminGuard)
   async revokeRefreshToken(
     @Args('userId') userId: string,
   ): Promise<MutationBasicResponse> {

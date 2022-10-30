@@ -40,3 +40,11 @@ export const updateUserMutation = gql`
     }
   }
 `;
+
+export const revokeRefreshTokenMutation = gql`
+  mutation RevokeRefreshToken($userId: String!) {
+    revokeRefreshToken(userId: $userId) {
+      message
+    }
+  }
+`;
