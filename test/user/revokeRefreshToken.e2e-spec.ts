@@ -52,12 +52,6 @@ describe('Revoke refresh token (e2e)', () => {
     isAdmin?: boolean;
   };
 
-  const updateInput: RegisterInput = {
-    name: 'newUser',
-    email: 'new.user@example.com',
-    isAdmin: true,
-  };
-
   const register = async (
     addUserInput: RegisterInput = {
       name: undefined,
