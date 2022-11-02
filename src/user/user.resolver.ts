@@ -182,7 +182,7 @@ export class UserResolver {
       throw new Error('Wrong credentials');
     }
 
-    await this.userService.update(user.id, {
+    const updatedUser = await this.userService.update(user.id, {
       refreshTokenVersion: user.refreshTokenVersion + 1,
     });
 
@@ -191,9 +191,9 @@ export class UserResolver {
       isAdmin: user.isAdmin,
     });
     const refreshToken = this.authService.createRefreshToken({
-      userId: user.id,
-      tokenVersion: user.refreshTokenVersion,
-      isAdmin: user.isAdmin,
+      userId: updatedUser.id,
+      tokenVersion: updatedUser.refreshTokenVersion,
+      isAdmin: updatedUser.isAdmin,
     });
 
     res.cookie('jwt', refreshToken, {
