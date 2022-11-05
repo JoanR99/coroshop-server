@@ -1,5 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { TokenExpiredError } from 'jsonwebtoken';
 import { AuthService } from '../auth.service';
 
 export type TokenPayload = {
@@ -31,9 +32,12 @@ export class AuthMiddleware implements NestMiddleware {
 
     const token = authHeader.split(' ')[1];
 
-    const tokenPayload = this.authService.validateAccessToken(token);
-
-    req.payload = tokenPayload;
-    next();
+    try {
+      const tokenPayload = this.authService.validateAccessToken(token);
+      req.payload = tokenPayload;
+      next();
+    } catch (e) {
+      return next();
+    }
   }
 }

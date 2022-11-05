@@ -103,11 +103,14 @@ type Query {
   getUsers(getUsersInput: GetItemsInput!): GetUsersResponse!
   getUserProfile: User!
   getUser(userId: String!): User!
+  getUsersCount: Float!
   getProducts(getProductsInput: GetItemsInput!): GetProductsResponse!
   getProduct(productId: String!): Product!
+  getProductsCount: Float!
   getOrders: [Order!]!
   getUserOrders: [Order!]!
   getOrderById(orderId: String!): Order!
+  getOrdersCount: Float!
   getReviews(productId: String!): [Review!]!
 }
 

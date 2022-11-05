@@ -90,6 +90,14 @@ export class UserResolver {
     };
   }
 
+  @Query(() => Number)
+  @UseGuards(AuthGuard, AdminGuard)
+  async getUsersCount(): Promise<number> {
+    const usersCount = await this.userService.count();
+
+    return usersCount;
+  }
+
   @Mutation(() => User)
   async addUser(
     @Args('addUserInput')

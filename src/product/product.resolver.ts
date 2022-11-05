@@ -60,6 +60,14 @@ export class ProductResolver {
     return product;
   }
 
+  @Query(() => Number)
+  @UseGuards(AuthGuard, AdminGuard)
+  async getProductsCount(): Promise<number> {
+    const productsCount = await this.productService.count();
+
+    return productsCount;
+  }
+
   @Mutation(() => Product)
   @UseGuards(AuthGuard, AdminGuard)
   async addProduct(

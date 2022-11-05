@@ -44,6 +44,14 @@ export class OrderResolver {
     return order;
   }
 
+  @Query(() => Number)
+  @UseGuards(AuthGuard, AdminGuard)
+  async getOrdersCount(): Promise<number> {
+    const ordersCount = await this.orderService.count();
+
+    return ordersCount;
+  }
+
   @Mutation(() => Order)
   @UseGuards(AuthGuard)
   async addOrder(
