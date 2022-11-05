@@ -118,6 +118,7 @@ input GetItemsInput {
   keyword: String!
   pageSize: Int!
   pageNumber: Int!
+  category: String
 }
 
 type Mutation {

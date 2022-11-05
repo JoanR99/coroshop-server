@@ -20,16 +20,29 @@ export class ProductResolver {
   @Query(() => GetProductsResponse)
   async getProducts(
     @Args('getProductsInput')
-    { pageNumber, pageSize, keyword }: GetItemsInput,
+    { pageNumber, pageSize, keyword, category }: GetItemsInput,
   ): Promise<GetProductsResponse> {
-    const keywordRegex = keyword
-      ? {
-          name: {
-            $regex: keyword,
-            $options: 'i',
-          },
-        }
-      : {};
+    let keywordRegex = {};
+
+    if (keyword) {
+      keywordRegex = {
+        ...keywordRegex,
+        name: {
+          $regex: keyword,
+          $options: 'i',
+        },
+      };
+    }
+
+    if (category) {
+      keywordRegex = {
+        ...keywordRegex,
+        category: {
+          $regex: category,
+          $options: 'i',
+        },
+      };
+    }
 
     const count = await this.productService.count(keywordRegex);
 

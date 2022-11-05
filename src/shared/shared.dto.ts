@@ -13,6 +13,9 @@ export class GetItemsInput {
   @Field((_type) => Int)
   @Min(1)
   pageNumber: number;
+
+  @Field(() => String, { nullable: true })
+  category?: string;
 }
 
 @ObjectType()
