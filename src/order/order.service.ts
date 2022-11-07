@@ -14,6 +14,6 @@ export class OrderService extends BaseService<Order> {
   }
 
   findByUserId(userId: string) {
-    return this.orderModel.find({ user: userId });
+    return this.orderModel.find({ orderBy: userId });
   }
 }
