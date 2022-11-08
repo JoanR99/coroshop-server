@@ -36,6 +36,7 @@ const MONGO_URI: string =
       context: ({ req, res }) => ({ req, res }),
       path: '/api/graphql',
       cors: false,
+      persistedQueries: false,
     }),
     MongooseModule.forRoot(MONGO_URI),
   ],
