@@ -1,8 +1,8 @@
 const allowedOrigins: string[] = [
-  'http://127.0.0.1:8080',
-  'http://127.0.0.1:5173',
+  'https://coroshop-client.vercel.app/',
+  'https://coroshop-client-romerojoan1999-gmailcom.vercel.app/',
+  'https://coroshop-client-git-main-romerojoan1999-gmailcom.vercel.app/',
   'http://localhost:5173',
-  'http://localhost:8080',
   'https://studio.apollographql.com',
 ];
 

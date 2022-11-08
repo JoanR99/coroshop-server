@@ -15,8 +15,10 @@ import * as cookieParser from 'cookie-parser';
 dotenv.config();
 
 const MONGO_URI: string =
-  process.env.NODE_ENV === 'development'
+  process.env.NODE_ENV === 'production'
     ? process.env.MONGO_URI
+    : process.env.NODE_ENV === 'development'
+    ? process.env.MONGO_URI_DEV
     : process.env.MONGO_URI_TEST;
 
 @Module({
