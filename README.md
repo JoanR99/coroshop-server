@@ -28,7 +28,7 @@ Coroshop is a tech e-commerce with administrator options to add, edit or delete 
 
 ![Node] ![Typescript] ![Nest] ![GraphQL] ![MongoDb]
 
-Coroshop was developed with Node.js, Typescript and Nest.js framework, using Mongoose as ODM for a MongoDB database. I decided to build this with Nest because it has default Typescript support and because it is a robust and opinionated framework to build complex backends.
+Coroshop was developed with Node.js, Typescript and Nest.js framework, using Mongoose as ODM for a MongoDB database. I choose Nest as the framework because it works by default with TypeScript, allowing the creation of more scalable, testable, and maintainable APIs, and promoting a structure with a good separation of responsibilities. Also, I choose to work with GraphQL instead of a REST API because it is composed of a typed query language that complements very well with TypeScript and generates the API documentation automatically. Finally, I use MongoDB as the database because of its flexibility in defining models and because it's perfect for handling large amounts of data as it scales more cheaply than a relational database.
 
 &nbsp;
 
