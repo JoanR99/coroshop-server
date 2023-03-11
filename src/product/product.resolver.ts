@@ -8,7 +8,12 @@ import { ProductService } from './product.service';
 import { AuthGuard } from '../user/guards/auth.guard';
 import { AdminGuard } from '../user/guards/admin.guard';
 import { UserId } from '../user/decorators/userId.decorator';
-import { MutationBasicResponse, GetItemsInput } from '../shared/shared.dto';
+import {
+  MutationBasicResponse,
+  GetItemsInput,
+  GetProductsInput,
+} from '../shared/shared.dto';
+import createProductsFilterQuery from './createProductsFilterQuery';
 
 @Resolver((of) => Product)
 export class ProductResolver {
@@ -20,38 +25,18 @@ export class ProductResolver {
   @Query(() => GetProductsResponse)
   async getProducts(
     @Args('getProductsInput')
-    { pageNumber, pageSize, keyword, category }: GetItemsInput,
+    { pageNumber, pageSize, ...filters }: GetProductsInput,
   ): Promise<GetProductsResponse> {
-    let keywordRegex = {};
+    const filterRegex = createProductsFilterQuery({ ...filters });
 
-    if (keyword) {
-      keywordRegex = {
-        ...keywordRegex,
-        name: {
-          $regex: keyword,
-          $options: 'i',
-        },
-      };
-    }
-
-    if (category) {
-      keywordRegex = {
-        ...keywordRegex,
-        category: {
-          $regex: category,
-          $options: 'i',
-        },
-      };
-    }
-
-    const count = await this.productService.count(keywordRegex);
+    const count = await this.productService.count(filterRegex);
 
     const pages = Math.ceil(count / pageSize);
 
     const page = pageNumber > pages ? 1 : pageNumber;
 
     const products = await this.productService
-      .findAll(keywordRegex)
+      .findAll(filterRegex)
       .limit(pageSize)
       .skip(pageSize * (page - 1));
 

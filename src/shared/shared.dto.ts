@@ -13,6 +13,18 @@ export class GetItemsInput {
   @Field((_type) => Int)
   @Min(1)
   pageNumber: number;
+}
+
+@InputType()
+export class GetProductsInput extends GetItemsInput {
+  @Field(() => Number, { nullable: true })
+  minPriceLimit?: number;
+
+  @Field(() => Number, { nullable: true })
+  maxPriceLimit?: number;
+
+  @Field(() => Number, { nullable: true })
+  minRating?: number;
 
   @Field(() => String, { nullable: true })
   category?: string;

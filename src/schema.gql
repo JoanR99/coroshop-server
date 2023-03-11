@@ -104,7 +104,7 @@ type Query {
   getUserProfile: User!
   getUser(userId: String!): User!
   getUsersCount: Float!
-  getProducts(getProductsInput: GetItemsInput!): GetProductsResponse!
+  getProducts(getProductsInput: GetProductsInput!): GetProductsResponse!
   getProduct(productId: String!): Product!
   getProductsCount: Float!
   getOrders: [Order!]!
@@ -118,6 +118,15 @@ input GetItemsInput {
   keyword: String!
   pageSize: Int!
   pageNumber: Int!
+}
+
+input GetProductsInput {
+  keyword: String!
+  pageSize: Int!
+  pageNumber: Int!
+  minPriceLimit: Float
+  maxPriceLimit: Float
+  minRating: Float
   category: String
 }
 
