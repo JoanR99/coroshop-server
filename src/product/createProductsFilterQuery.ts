@@ -31,21 +31,27 @@ function createProductsFilterQuery({
       }
     : {};
 
-  const maxPriceLimitFilter = maxPriceLimit
-    ? {
-        price: {
-          $lt: maxPriceLimit,
-        },
-      }
-    : {};
-
-  const minPriceLimitFilter = minPriceLimit
-    ? {
-        price: {
-          $gt: minPriceLimit,
-        },
-      }
-    : {};
+  const priceLimitFilter =
+    minPriceLimit && maxPriceLimit
+      ? {
+          price: {
+            $gte: minPriceLimit,
+            $lte: maxPriceLimit,
+          },
+        }
+      : minPriceLimit
+      ? {
+          price: {
+            $gte: minPriceLimit,
+          },
+        }
+      : maxPriceLimit
+      ? {
+          price: {
+            $lte: maxPriceLimit,
+          },
+        }
+      : {};
 
   const minRatingFilter = minRating
     ? {
@@ -58,8 +64,7 @@ function createProductsFilterQuery({
   const filterRegex = {
     ...keywordRegex,
     ...categoryRegex,
-    ...maxPriceLimitFilter,
-    ...minPriceLimitFilter,
+    ...priceLimitFilter,
     ...minRatingFilter,
   };
 
