@@ -56,7 +56,7 @@ function createProductsFilterQuery({
   const minRatingFilter = minRating
     ? {
         rating: {
-          $gt: minRating,
+          $gte: minRating,
         },
       }
     : {};
