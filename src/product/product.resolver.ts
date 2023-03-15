@@ -144,8 +144,6 @@ export class ProductResolver {
   @ResolveField('reviews', () => [Review])
   async getReviews(@Parent() product: ProductInfo) {
     const { id } = product;
-    return await this.reviewService
-      .findAll({ product: id })
-      .select('id rating comment author authorName createdAt');
+    return await this.reviewService.findAll({ product: id });
   }
 }
