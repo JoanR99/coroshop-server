@@ -67,11 +67,7 @@ export class ProductResolver {
 
   @Query(() => ProductInfo)
   async getProduct(@Args('productId') productId: string): Promise<ProductInfo> {
-    const product = await this.productService
-      .findById(productId)
-      .select(
-        'id name price image rating numReviews description countInStock category',
-      );
+    const product = await this.productService.findById(productId);
 
     if (!product) {
       throw new Error('Product not found');
