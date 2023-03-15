@@ -4,6 +4,7 @@ import { ProductService } from './product.service';
 import { Product } from './product.model';
 import { UserModule } from '../user/user.module';
 import { ProductResolver } from './product.resolver';
+import { ReviewModule } from 'src/review/review.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ProductResolver } from './product.resolver';
       { name: Product.modelName, schema: Product.schema },
     ]),
     UserModule,
+    ReviewModule,
   ],
   providers: [ProductResolver, ProductService],
   exports: [ProductService],

@@ -4,23 +4,25 @@ import { UserService } from '../user/user.service';
 
 import { AuthGuard } from '../user/guards/auth.guard';
 import { UserId } from '../user/decorators/userId.decorator';
-import { Review } from './review.model';
-import { ReviewService } from './review.service';
-import { ReviewInput } from './review.dto';
+import { Review } from '../review/review.model';
+import { ReviewInput } from '../review/review.dto';
 import { MutationBasicResponse } from '../shared/shared.dto';
-import { ProductService } from '../product/product.service';
+import { ProductReviewService } from './productReview.service';
+import { ProductService } from 'src/product/product.service';
+import { ReviewService } from 'src/review/review.service';
 
 @Resolver((of) => Review)
-export class ReviewResolver {
+export class ProductReviewResolver {
   constructor(
-    private reviewService: ReviewService,
-    private userService: UserService,
+    private productReviewService: ProductReviewService,
     private productService: ProductService,
+    private userService: UserService,
+    private reviewService: ReviewService,
   ) {}
 
   @Query(() => [Review])
   async getReviews(@Args('productId') productId: string): Promise<Review[]> {
-    const reviews = await this.reviewService.findByProductId(productId);
+    const reviews = await this.productReviewService.findByProductId(productId);
 
     return reviews;
   }
@@ -38,7 +40,7 @@ export class ReviewResolver {
       throw new Error('Product not found');
     }
 
-    const reviewsOfProduct = await this.reviewService.findByProductId(
+    const reviewsOfProduct = await this.productReviewService.findByProductId(
       product.id,
     );
 
@@ -52,23 +54,14 @@ export class ReviewResolver {
 
     const user = await this.userService.findById(userId);
 
-    await this.reviewService.create({
-      rating: reviewBody.rating,
-      comment: reviewBody.comment,
-      author: user?.id,
-      authorName: user?.name,
-      product: product.id,
-    });
+    await this.productReviewService.addProductReview(
+      reviewBody,
+      user.id,
+      user.name,
+      product.id,
+    );
 
-    const newRating = await this.reviewService.ratingOfProduct(product.id);
-    const reviewsCount = await this.reviewService.count({
-      product: product.id,
-    });
-
-    await this.productService.update(product.id, {
-      rating: newRating,
-      numReviews: reviewsCount,
-    });
+    await this.productReviewService.updateProductReviewInfo(productId);
 
     return {
       message: 'Review added',
@@ -101,7 +94,9 @@ export class ReviewResolver {
 
       if (!product) throw new Error('Product not found');
 
-      const newRating = await this.reviewService.ratingOfProduct(product.id);
+      const newRating = await this.productReviewService.ratingOfProduct(
+        product.id,
+      );
 
       await this.productService.update(product.id, {
         rating: newRating,
@@ -135,15 +130,7 @@ export class ReviewResolver {
 
     if (!product) throw new Error('Product not found');
 
-    const newRating = await this.reviewService.ratingOfProduct(product.id);
-    const reviewsCount = await this.reviewService.count({
-      product: product.id,
-    });
-
-    await this.productService.update(product.id, {
-      rating: newRating,
-      numReviews: reviewsCount,
-    });
+    await this.productReviewService.updateProductReviewInfo(product.id);
 
     return {
       message: 'Review deleted',

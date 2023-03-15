@@ -44,10 +44,42 @@ type LoginResponse {
   accessToken: String!
 }
 
+type Review {
+  createdAt: DateTime!
+  id: ID!
+  rating: Float!
+  comment: String!
+  author: ID!
+  authorName: String!
+  product: ID!
+}
+
 type GetProductsResponse {
   page: Float!
   pages: Float!
   products: [Product!]!
+}
+
+type ProductInfo {
+  createdAt: DateTime!
+  id: ID!
+  createdBy: ID!
+  name: String!
+  image: String!
+  brand: String!
+  category: String!
+  description: String!
+  rating: Float!
+  numReviews: Int!
+  price: Float!
+  countInStock: Int!
+  similarProducts: [Product!]!
+  reviews: [Review!]!
+}
+
+type ProductsByCategory {
+  products: [Product!]
+  category: String
 }
 
 type OrderItem2 {
@@ -89,23 +121,14 @@ type Order {
   deliveredAt: String
 }
 
-type Review {
-  createdAt: DateTime!
-  id: ID!
-  rating: Float!
-  comment: String!
-  author: ID!
-  authorName: String!
-  product: ID!
-}
-
 type Query {
   getUsers(getUsersInput: GetItemsInput!): GetUsersResponse!
   getUserProfile: User!
   getUser(userId: String!): User!
   getUsersCount: Float!
   getProducts(getProductsInput: GetProductsInput!): GetProductsResponse!
-  getProduct(productId: String!): Product!
+  getProductsGroupedByCategory: [ProductsByCategory!]!
+  getProduct(productId: String!): ProductInfo!
   getProductsCount: Float!
   getOrders: [Order!]!
   getUserOrders: [Order!]!

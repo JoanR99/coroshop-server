@@ -12,6 +12,7 @@ import { CredentialsMiddleware } from './credentials.middleware';
 import { ApiModule } from './api/api.module';
 import * as dotenv from 'dotenv';
 import * as cookieParser from 'cookie-parser';
+import { ProductReviewModule } from './productReview/productReview.module';
 dotenv.config();
 
 const MONGO_URI: string =
@@ -28,6 +29,7 @@ const MONGO_URI: string =
     UserModule,
     OrderModule,
     ReviewModule,
+    ProductReviewModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: false,

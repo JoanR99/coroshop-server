@@ -13,24 +13,4 @@ export class ReviewService extends BaseService<Review> {
   ) {
     super(reviewModel);
   }
-
-  findByProductId(productId: string) {
-    return this.reviewModel.find({ product: productId });
-  }
-
-  async ratingOfProduct(productId: string) {
-    const currentReviewsOfProduct = await this.reviewModel.find({
-      product: productId,
-    });
-
-    const newRatingOfProduct =
-      currentReviewsOfProduct.length > 0
-        ? currentReviewsOfProduct.reduce(
-            (acc: number, review) => review?.rating + acc,
-            0,
-          ) / currentReviewsOfProduct.length
-        : 0;
-
-    return newRatingOfProduct;
-  }
 }

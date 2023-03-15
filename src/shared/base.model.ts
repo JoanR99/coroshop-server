@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { ObjectId, Schema } from 'mongoose';
 import {
   buildSchema,
   ModelOptions,
@@ -18,7 +18,7 @@ export abstract class BaseModel {
   updatedAt?: Date;
 
   @GqlField((_type) => ID)
-  id?: string;
+  id?: ObjectId;
 
   static get schema(): Schema {
     return buildSchema(this as any, {

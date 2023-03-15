@@ -12,4 +12,30 @@ export class ProductService extends BaseService<Product> {
   ) {
     super(productModel);
   }
+
+  getGroupedByCategory() {
+    return this.productModel.aggregate([
+      {
+        $group: {
+          _id: '$category',
+          products: {
+            $push: {
+              id: '$_id',
+              name: '$name',
+              image: '$image',
+              rating: '$rating',
+              price: '$price',
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          category: '$_id',
+          products: { $slice: ['$products', 4] },
+        },
+      },
+    ]);
+  }
 }
