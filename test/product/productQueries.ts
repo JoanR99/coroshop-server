@@ -1,7 +1,7 @@
 import { gql } from 'apollo-server-express';
 
 export const getProductsQuery = gql`
-  query GetProducts($getProductsInput: GetItemsInput!) {
+  query GetProducts($getProductsInput: GetProductsInput!) {
     getProducts(getProductsInput: $getProductsInput) {
       page
       pages

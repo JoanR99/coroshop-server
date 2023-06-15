@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ReviewService } from 'src/review/review.service';
-import { ProductService } from 'src/product/product.service';
-import { UserService } from 'src/user/user.service';
-import { ReviewInput } from 'src/review/review.dto';
-import { User } from 'src/user/user.model';
-import { Product } from 'src/product/product.model';
+import { ReviewService } from '../review/review.service';
+import { ProductService } from '../product/product.service';
+import { UserService } from '../user/user.service';
+import { ReviewInput } from '../review/review.dto';
+import { User } from '../user/user.model';
+import { Product } from '../product/product.model';
 import { Ref } from '@typegoose/typegoose';
 import { Types } from 'mongoose';
 

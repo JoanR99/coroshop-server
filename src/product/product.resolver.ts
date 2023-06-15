@@ -22,8 +22,8 @@ import { AdminGuard } from '../user/guards/admin.guard';
 import { UserId } from '../user/decorators/userId.decorator';
 import { MutationBasicResponse, GetProductsInput } from '../shared/shared.dto';
 import createProductsFilterQuery from './createProductsFilterQuery';
-import { ReviewService } from 'src/review/review.service';
-import { Review } from 'src/review/review.model';
+import { ReviewService } from '../review/review.service';
+import { Review } from '../review/review.model';
 
 @Resolver((of) => ProductInfo)
 export class ProductResolver {

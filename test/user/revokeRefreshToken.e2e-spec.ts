@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
-import corsOptions from '../../src/corsOptions';
 import { VALID_CREDENTIALS, UNAUTHORIZED_MESSAGE } from '../utils/constants';
 import { Connection } from 'mongoose';
 import { hash } from 'bcrypt';
@@ -28,7 +27,6 @@ describe('Revoke refresh token (e2e)', () => {
     );
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
-    app.enableCors(corsOptions as any);
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
 import { BaseService } from '../shared/base.service';
-import { ReviewInput } from './review.dto';
 import { Review } from './review.model';
 
 @Injectable()

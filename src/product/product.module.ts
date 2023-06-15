@@ -4,7 +4,7 @@ import { ProductService } from './product.service';
 import { Product } from './product.model';
 import { UserModule } from '../user/user.module';
 import { ProductResolver } from './product.resolver';
-import { ReviewModule } from 'src/review/review.module';
+import { ReviewModule } from '../review/review.module';
 
 @Module({
   imports: [

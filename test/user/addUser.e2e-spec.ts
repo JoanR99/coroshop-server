@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
-import corsOptions from '../../src/corsOptions';
 import { BAD_REQUEST } from '../utils/constants';
 import { Connection } from 'mongoose';
 
@@ -26,7 +25,6 @@ describe('Add user (e2e)', () => {
     );
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
-    app.enableCors(corsOptions as any);
     app.useGlobalPipes(new ValidationPipe());
 
     await app.init();

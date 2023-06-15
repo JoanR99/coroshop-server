@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType, Int, Float, ID } from '@nestjs/graphql';
-import { Review } from 'src/review/review.model';
+import { Review } from '../review/review.model';
 import { GetPaginatedResponse } from '../shared/shared.dto';
 import { Product } from './product.model';
 

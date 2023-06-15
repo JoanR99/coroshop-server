@@ -8,8 +8,8 @@ import { Review } from '../review/review.model';
 import { ReviewInput } from '../review/review.dto';
 import { MutationBasicResponse } from '../shared/shared.dto';
 import { ProductReviewService } from './productReview.service';
-import { ProductService } from 'src/product/product.service';
-import { ReviewService } from 'src/review/review.service';
+import { ProductService } from '../product/product.service';
+import { ReviewService } from '../review/review.service';
 
 @Resolver((of) => Review)
 export class ProductReviewResolver {

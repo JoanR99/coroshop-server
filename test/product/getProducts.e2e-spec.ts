@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getModelToken, getConnectionToken } from '@nestjs/mongoose';
 import request from 'supertest-graphql';
 import { ReturnModelType } from '@typegoose/typegoose/lib/types';
-import corsOptions from '../../src/corsOptions';
 import { Product } from '../../src/product/product.model';
 import { getProductsQuery } from './productQueries';
 import {
@@ -37,7 +36,6 @@ describe('Get Products (e2e)', () => {
     );
     connection = moduleFixture.get<Connection>(getConnectionToken());
     app = moduleFixture.createNestApplication();
-    app.enableCors(corsOptions as any);
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
@@ -93,6 +91,10 @@ describe('Get Products (e2e)', () => {
     pageSize?: any;
     pageNumber?: any;
     keyword?: any;
+    minPriceLimit?: any;
+    maxPriceLimit?: any;
+    minRating?: any;
+    category?: any;
   };
 
   type GetProductsResponse = {
