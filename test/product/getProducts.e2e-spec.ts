@@ -10,6 +10,7 @@ import {
   BAD_INT_INPUT,
   BAD_STRING_INPUT,
   BAD_REQUEST,
+  BAD_FLOAT_INPUT,
 } from '../utils/constants';
 
 import { Connection } from 'mongoose';
@@ -230,6 +231,69 @@ describe('Get Products (e2e)', () => {
         BAD_REQUEST,
       );
     });
+
+    it('should  return error message when minPriceLimit argument is not a number', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(1, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 1,
+        keyword: '',
+        minPriceLimit: '',
+      });
+
+      expect(
+        response.errors
+          ?.map((error) => error.message)[0]
+          .includes(BAD_FLOAT_INPUT),
+      ).toBeTruthy();
+    });
+
+    it('should  return error message when maxPriceLimit argument is not a number', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(1, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 1,
+        keyword: '',
+        maxPriceLimit: '',
+      });
+
+      expect(
+        response.errors
+          ?.map((error) => error.message)[0]
+          .includes(BAD_FLOAT_INPUT),
+      ).toBeTruthy();
+    });
+
+    it('should  return error message when minRating argument is not a number', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(1, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 1,
+        keyword: '',
+        minRating: '',
+      });
+
+      expect(
+        response.errors
+          ?.map((error) => error.message)[0]
+          .includes(BAD_FLOAT_INPUT),
+      ).toBeTruthy();
+    });
   });
 
   describe('Bad inputs returning default properties cases', () => {
@@ -315,6 +379,108 @@ describe('Get Products (e2e)', () => {
       expect(
         (response.data as GetProductsResponse).getProducts.products[0].name,
       ).toBe('product8');
+      expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
+      expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
+    });
+
+    it('should return correct products and pagination data when maxPriceLimit is provided', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(11, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 10,
+        keyword: '',
+        maxPriceLimit: 50,
+      });
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products.length,
+      ).toBe(1);
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products[0].name,
+      ).toBe('product0');
+      expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
+      expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
+    });
+
+    it('should return correct products and pagination data when minPriceLimit is provided', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(11, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 10,
+        keyword: '',
+        minPriceLimit: 1000,
+      });
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products.length,
+      ).toBe(1);
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products[0].name,
+      ).toBe('product10');
+      expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
+      expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
+    });
+
+    it('should return correct products and pagination data when minRating is provided', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(11, user.id, user.name);
+
+      await productModel.findOneAndUpdate({ name: 'product0' }, { rating: 4 });
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 10,
+        keyword: '',
+        minRating: 3,
+      });
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products.length,
+      ).toBe(1);
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products[0].name,
+      ).toBe('product0');
+      expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
+      expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
+    });
+
+    it('should return correct products and pagination data when category is provided', async () => {
+      const user = await register({
+        ...VALID_CREDENTIALS,
+        name: 'user',
+      });
+      await createProducts(11, user.id, user.name);
+
+      const response = await getProducts({
+        pageNumber: 1,
+        pageSize: 10,
+        keyword: '',
+        category: 'category0',
+      });
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products.length,
+      ).toBe(1);
+
+      expect(
+        (response.data as GetProductsResponse).getProducts.products[0].name,
+      ).toBe('product0');
       expect((response.data as GetProductsResponse).getProducts.page).toBe(1);
       expect((response.data as GetProductsResponse).getProducts.pages).toBe(1);
     });
