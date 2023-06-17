@@ -7,3 +7,11 @@ export const addReviewMutation = gql`
     }
   }
 `;
+
+export const deleteReviewMutation = gql`
+  mutation DeleteReview($reviewId: String!) {
+    deleteReview(reviewId: $reviewId) {
+      message
+    }
+  }
+`;

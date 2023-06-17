@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType, ID, Float } from '@nestjs/graphql';
+import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class ReviewInput {

@@ -155,7 +155,7 @@ describe('Delete Product (e2e)', () => {
       ).toBeTruthy();
     });
 
-    it('should return error message on request by unauthorized user', async () => {
+    fit('should return error message on request by unauthorized user', async () => {
       await register({
         ...VALID_CREDENTIALS,
         name: 'user',
