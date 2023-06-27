@@ -23,6 +23,11 @@ export const ADD_PRODUCT_INPUT = {
   description: 'desc',
 };
 
+export const ADD_REVIEW_INPUT = {
+  comment: 'title',
+  rating: 5,
+};
+
 export const UNAUTHORIZED_MESSAGE = 'Forbidden resource';
 
 export const BAD_ID =
