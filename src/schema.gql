@@ -168,7 +168,7 @@ type Mutation {
   updateOrderToPaid(orderId: String!, paymentResultBody: UpdateOrderInput!): Order!
   updateOrderToDelivered(orderId: String!): Order!
   addReview(reviewBody: ReviewInput!, productId: String!): MutationBasicResponse!
-  updateReview(reviewId: String!, updateBody: ReviewInput!): Review!
+  updateReview(reviewId: String!, updateBody: ReviewInput!): MutationBasicResponse!
   deleteReview(reviewId: String!): MutationBasicResponse!
 }
 

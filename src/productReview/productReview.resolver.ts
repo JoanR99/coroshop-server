@@ -68,13 +68,13 @@ export class ProductReviewResolver {
     };
   }
 
-  @Mutation(() => Review)
+  @Mutation(() => MutationBasicResponse)
   @UseGuards(AuthGuard)
   async updateReview(
     @Args('reviewId') reviewId: string,
     @Args('updateBody') updateBody: ReviewInput,
     @UserId() userId: string,
-  ): Promise<Review> {
+  ): Promise<MutationBasicResponse> {
     const review = await this.reviewService.findById(reviewId);
 
     if (!review) {
@@ -103,7 +103,9 @@ export class ProductReviewResolver {
       });
     }
 
-    return updatedReview;
+    return {
+      message: 'Review updated',
+    };
   }
 
   @Mutation(() => MutationBasicResponse)

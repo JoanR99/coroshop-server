@@ -15,3 +15,11 @@ export const deleteReviewMutation = gql`
     }
   }
 `;
+
+export const updateReviewMutation = gql`
+  mutation UpdateReview($reviewId: String!, $updateBody: ReviewInput!) {
+    updateReview(reviewId: $reviewId, updateBody: $updateBody) {
+      message
+    }
+  }
+`;
